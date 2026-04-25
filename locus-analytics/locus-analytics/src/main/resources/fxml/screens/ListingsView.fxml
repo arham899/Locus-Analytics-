@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox spacing="12.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.screen.ListingsController">
+    <padding>
+        <Insets top="16.0" right="16.0" bottom="16.0" left="16.0"/>
+    </padding>
+
+    <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+        <HBox>
+            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                <Label text="Listings Management" styleClass="terminal-screen-title"/>
+                <Label text="Global registry review and validation." styleClass="terminal-muted-text"/>
+            </VBox>
+            <Label text="SYNC: HEALTHY | 24ms latency" styleClass="terminal-chip-success"/>
+        </HBox>
+
+        <HBox spacing="8.0" styleClass="terminal-card">
+            <TextField fx:id="cityFilterField" promptText="City filter (e.g., Karachi)" HBox.hgrow="ALWAYS" styleClass="stitch-input"/>
+            <Button text="Load" styleClass="terminal-primary-button" onAction="#onLoadListings"/>
+            <Button text="Approve" styleClass="terminal-outline-button" onAction="#onEditListing"/>
+            <Button text="Reject" styleClass="terminal-secondary-button" onAction="#onDeleteListing"/>
+            <Button text="Flag" styleClass="terminal-outline-button" onAction="#onAddListing"/>
+            <Button text="Refresh" styleClass="terminal-outline-button" onAction="#onLoadListings"/>
+        </HBox>
+
+        <VBox spacing="8.0" styleClass="terminal-card" VBox.vgrow="ALWAYS">
+            <TableView fx:id="listingsTable" VBox.vgrow="ALWAYS" minHeight="420.0">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="130.0"/>
+                    <TableColumn fx:id="cityColumn" text="City" prefWidth="120.0"/>
+                    <TableColumn fx:id="localityColumn" text="Locality" prefWidth="220.0"/>
+                    <TableColumn fx:id="priceColumn" text="Price (USD)" prefWidth="160.0"/>
+                </columns>
+            </TableView>
+            <HBox>
+                <Label text="Showing 1 to 5 of 12,402 entries" styleClass="terminal-muted-text" HBox.hgrow="ALWAYS"/>
+                <HBox spacing="6.0">
+                    <Button text="Prev" styleClass="terminal-secondary-button"/>
+                    <Button text="1" styleClass="terminal-primary-button"/>
+                    <Button text="2" styleClass="terminal-secondary-button"/>
+                    <Button text="3" styleClass="terminal-secondary-button"/>
+                    <Button text="Next" styleClass="terminal-secondary-button"/>
+                </HBox>
+            </HBox>
+        </VBox>
+
+        <Label fx:id="statusLabel" text="Listings dashboard ready." styleClass="terminal-status-label"/>
+    </VBox>
+
+    <VBox spacing="10.0" prefWidth="300.0" styleClass="terminal-card">
+        <Label text="LST-9945" styleClass="terminal-chip-success"/>
+        <Label text="Detail View" styleClass="terminal-card-title"/>
+        <HBox spacing="8.0">
+            <Button text="Edit Metadata" styleClass="terminal-outline-button" HBox.hgrow="ALWAYS"/>
+            <Button text="Force Sync" styleClass="terminal-primary-button" HBox.hgrow="ALWAYS"/>
+        </HBox>
+        <VBox spacing="4.0">
+            <Label text="Asset Class: Commercial / Office" styleClass="terminal-muted-text"/>
+            <Label text="Valuation: $12,400,000" styleClass="terminal-kpi-value"/>
+            <Label text="Cap Rate: 5.2% | Occupancy: 88%" styleClass="terminal-muted-text"/>
+        </VBox>
+        <VBox spacing="6.0">
+            <Label text="Recent Sync Activity" styleClass="terminal-label"/>
+            <Label text="[10:30:12 UTC] SYNC_OK: Payload validated." styleClass="terminal-muted-text"/>
+            <Label text="[10:30:11 UTC] FETCH: Calling API_EXT_1 endpoint." styleClass="terminal-muted-text"/>
+            <Label text="[09:15:00 UTC] WARN: Image asset timeout (retrying)." styleClass="terminal-chip-warning"/>
+        </VBox>
+    </VBox>
+</HBox>

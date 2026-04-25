@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.screen.ROIController">
+    <padding>
+        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0"/>
+    </padding>
+
+    <VBox spacing="4.0">
+        <Label text="ROI &amp; Yield Analysis" styleClass="terminal-screen-title"/>
+        <Label text="Track gross yield, expense-adjusted ROI, and sensitivity under current rent scenarios." styleClass="terminal-muted-text"/>
+    </VBox>
+
+    <GridPane hgap="12.0" vgap="12.0">
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label text="TOTAL ROI" styleClass="terminal-kpi-label"/>
+            <Label fx:id="roiLabel" text="24.8%" styleClass="terminal-kpi-value"/>
+            <Label text="YoY +3.2 pts" styleClass="terminal-status-label"/>
+        </VBox>
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label text="ANNUALIZED ROI" styleClass="terminal-kpi-label"/>
+            <Label fx:id="annualizedRoiLabel" text="7.6%" styleClass="terminal-kpi-value"/>
+            <Label text="Stable trend" styleClass="terminal-muted-text"/>
+        </VBox>
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <Label text="TOTAL RETURN" styleClass="terminal-kpi-label"/>
+            <Label fx:id="totalReturnLabel" text="PKR 4.9M" styleClass="terminal-kpi-value"/>
+            <Label text="Net of costs" styleClass="terminal-muted-text"/>
+        </VBox>
+    </GridPane>
+
+    <VBox spacing="8.0" styleClass="terminal-card">
+        <Label text="Calculation Inputs" styleClass="terminal-card-title"/>
+        <GridPane hgap="10.0" vgap="10.0">
+            <Label text="Purchase Price" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="purchasePriceField" promptText="18000000" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="Purchase Date" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+            <DatePicker fx:id="purchaseDatePicker" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+            <Label text="Current Value" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="currentValueField" promptText="25000000" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="Cumulative Rental Income" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+            <TextField fx:id="cumulativeRentalIncomeField" promptText="4200000" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+            <Label text="Total Expenses" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <TextField fx:id="totalExpensesField" promptText="900000" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        </GridPane>
+    </VBox>
+
+    <VBox spacing="10.0" styleClass="terminal-card" VBox.vgrow="ALWAYS">
+        <HBox>
+            <Label text="Scenario Breakdown" styleClass="terminal-card-title"/>
+        </HBox>
+        <GridPane hgap="10.0" vgap="10.0">
+            <Label text="Base Case Yield" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <Label text="6.4%" styleClass="terminal-chip-success" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="Optimistic Yield" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label text="7.8%" styleClass="terminal-chip-success" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="Stress Yield" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <Label text="5.1%" styleClass="terminal-chip-warning" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        </GridPane>
+        <HBox spacing="10.0">
+            <Button text="Recalculate" styleClass="terminal-primary-button" onAction="#onCalculateRoi"/>
+            <Button text="Reset" styleClass="terminal-outline-button" onAction="#onReset"/>
+        </HBox>
+    </VBox>
+
+    <Label fx:id="statusLabel" text="ROI dashboard ready." styleClass="terminal-status-label"/>
+</VBox>

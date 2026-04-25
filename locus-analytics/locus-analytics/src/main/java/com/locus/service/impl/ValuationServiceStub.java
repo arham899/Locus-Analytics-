@@ -6,6 +6,7 @@ import com.locus.service.ValuationService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,32 +18,67 @@ public class ValuationServiceStub implements ValuationService {
 
     @Override
     public Valuation estimateFMV(Property property) {
+        double area = Math.max(1, property.getArea());
+        int beds = Math.max(1, property.getBedrooms());
+        int baths = Math.max(1, property.getBathrooms());
+
+        double localityPremium = switch (String.valueOf(property.getLocality()).toLowerCase()) {
+            case "dha phase 6" -> 1.22;
+            case "clifton" -> 1.18;
+            case "bahria town" -> 1.05;
+            case "f-7" -> 1.20;
+            case "gulberg" -> 1.15;
+            default -> 1.00;
+        };
+        double typeFactor = switch (String.valueOf(property.getPropertyType()).toLowerCase()) {
+            case "house" -> 1.00;
+            case "apartment" -> 0.88;
+            case "plot" -> 0.72;
+            case "commercial" -> 1.28;
+            default -> 1.00;
+        };
+        double roomFactor = 1.0 + (beds * 0.03) + (baths * 0.015);
+        double baseRatePerSqft = 9800.0;
+        double estimated = area * baseRatePerSqft * localityPremium * typeFactor * roomFactor;
+
         Valuation v = new Valuation();
         v.setPropertyId(property.getPropertyId());
         v.setCalculationDate(LocalDateTime.now());
-        v.setEstimatedFmv(25_000_000);
-        v.setConfidenceIntervalLow(22_000_000);
-        v.setConfidenceIntervalHigh(28_000_000);
+        v.setEstimatedFmv(estimated);
+        v.setConfidenceIntervalLow(estimated * 0.90);
+        v.setConfidenceIntervalHigh(estimated * 1.10);
         v.setKeyFactors(Arrays.asList(
-                "Area: 2250 sq.ft. (+12% impact)",
-                "Locality: DHA Phase 6 (+18% premium)",
-                "Bedrooms: 4 (+8% impact)"
+                "Area: " + (int) area + " sq.ft.",
+                "Locality premium factor: " + String.format("%.2fx", localityPremium),
+                "Property type factor: " + String.format("%.2fx", typeFactor),
+                "Room mix factor: " + String.format("%.2fx", roomFactor)
         ));
         return v;
     }
 
     @Override
     public List<Property> findComparables(Property property) {
-        Property p1 = new Property("comp-1", "Karachi", "DHA Phase 6", "house",
-                2100, 23_500_000, 4, 3, LocalDate.of(2025, 6, 15), 24.81, 67.03, "hash1");
-        Property p2 = new Property("comp-2", "Karachi", "DHA Phase 6", "house",
-                2400, 27_000_000, 5, 3, LocalDate.of(2025, 5, 20), 24.82, 67.04, "hash2");
-        Property p3 = new Property("comp-3", "Karachi", "DHA Phase 6", "house",
-                2000, 22_000_000, 3, 2, LocalDate.of(2025, 4, 10), 24.80, 67.02, "hash3");
-        Property p4 = new Property("comp-4", "Karachi", "DHA Phase 5", "house",
-                2300, 24_500_000, 4, 3, LocalDate.of(2025, 3, 5), 24.79, 67.01, "hash4");
-        Property p5 = new Property("comp-5", "Karachi", "DHA Phase 6", "house",
-                2500, 26_800_000, 4, 4, LocalDate.of(2025, 2, 28), 24.83, 67.05, "hash5");
-        return Arrays.asList(p1, p2, p3, p4, p5);
+        double area = Math.max(1, property.getArea());
+        double basePrice = estimateFMV(property).getEstimatedFmv();
+        String city = property.getCity() == null ? "Karachi" : property.getCity();
+        String locality = property.getLocality() == null ? "DHA Phase 6" : property.getLocality();
+        String type = property.getPropertyType() == null ? "house" : property.getPropertyType();
+
+        List<Property> comps = new ArrayList<>();
+        double[] areaFactors = {0.90, 0.96, 1.00, 1.05, 1.12};
+        double[] priceFactors = {0.88, 0.94, 1.00, 1.06, 1.11};
+        for (int i = 0; i < areaFactors.length; i++) {
+            Property p = new Property("comp-" + (i + 1), city, locality, type,
+                    Math.round(area * areaFactors[i]),
+                    Math.round(basePrice * priceFactors[i]),
+                    Math.max(1, property.getBedrooms() + (i % 2 == 0 ? 0 : 1)),
+                    Math.max(1, property.getBathrooms()),
+                    LocalDate.now().minusWeeks(2L * (i + 1)),
+                    24.80 + (i * 0.01),
+                    67.00 + (i * 0.01),
+                    "hash" + (i + 1));
+            comps.add(p);
+        }
+        return comps;
     }
 }

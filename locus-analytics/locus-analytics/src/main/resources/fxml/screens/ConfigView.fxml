@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox spacing="12.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.screen.ConfigController">
+    <padding>
+        <Insets top="16.0" right="16.0" bottom="16.0" left="16.0"/>
+    </padding>
+
+    <VBox spacing="12.0" HBox.hgrow="ALWAYS">
+        <VBox spacing="4.0">
+            <Label text="System Configuration" styleClass="terminal-screen-title"/>
+            <Label text="Manage global thresholds, data integrations, and access policies." styleClass="terminal-muted-text"/>
+        </VBox>
+
+        <HBox spacing="12.0">
+            <VBox spacing="10.0" styleClass="terminal-card" HBox.hgrow="ALWAYS">
+                <Label text="Model Thresholds" styleClass="terminal-card-title"/>
+                <GridPane hgap="10.0" vgap="10.0">
+                    <Label text="DB Host" styleClass="terminal-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <TextField fx:id="dbHostField" styleClass="stitch-input" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="Google Maps API Key" styleClass="terminal-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <TextField fx:id="mapsKeyField" styleClass="stitch-input" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Scrape Interval" styleClass="terminal-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <TextField fx:id="scrapeIntervalField" styleClass="stitch-input" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label text="Model Path" styleClass="terminal-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <TextField fx:id="modelPathField" styleClass="stitch-input" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                </GridPane>
+            </VBox>
+
+            <VBox spacing="8.0" styleClass="terminal-card" prefWidth="260.0">
+                <Label text="Data Sources" styleClass="terminal-card-title"/>
+                <Label text="Bloomberg B-PIPE | 12ms latency" styleClass="terminal-chip-success"/>
+                <Label text="Refinitiv Elektron | 15ms latency" styleClass="terminal-chip-success"/>
+                <Label text="Internal FIX Engine | Disconnected" styleClass="terminal-chip-error"/>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="8.0" styleClass="terminal-card">
+            <Label text="ETL Pipeline Schedules" styleClass="terminal-card-title"/>
+            <TableView minHeight="190.0">
+                <columns>
+                    <TableColumn text="Job Name" prefWidth="220.0"/>
+                    <TableColumn text="CRON Expression" prefWidth="170.0"/>
+                    <TableColumn text="Last Run" prefWidth="180.0"/>
+                    <TableColumn text="Status" prefWidth="120.0"/>
+                    <TableColumn text="Actions" prefWidth="100.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <HBox spacing="10.0">
+            <Button text="Load Config" styleClass="terminal-outline-button" onAction="#onLoadConfig"/>
+            <Button text="Reset to Defaults" styleClass="terminal-secondary-button"/>
+            <Button text="Save Configuration" styleClass="terminal-primary-button" onAction="#onSaveConfig"/>
+            <Label fx:id="statusLabel" text="Configuration dashboard ready." styleClass="terminal-status-label" HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </VBox>
+
+    <VBox spacing="8.0" prefWidth="280.0" styleClass="terminal-card">
+        <HBox>
+            <Label text="Audit Trail" styleClass="terminal-card-title" HBox.hgrow="ALWAYS"/>
+            <Button text="Filter" styleClass="terminal-link-button"/>
+        </HBox>
+        <Label text="Threshold Adjusted" styleClass="terminal-label"/>
+        <Label text="admin_jdoe changed Confidence Cutoff from 0.80 to 0.85" wrapText="true" styleClass="terminal-muted-text"/>
+        <Label text="ETL Schedule Modified" styleClass="terminal-label"/>
+        <Label text="Risk_Metrics_Calc updated to */15 frequency" wrapText="true" styleClass="terminal-muted-text"/>
+        <Label text="System Restart" styleClass="terminal-label"/>
+        <Label text="Automated deployment cycle completed successfully" wrapText="true" styleClass="terminal-muted-text"/>
+    </VBox>
+</HBox>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox spacing="12.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.screen.ReportController">
+    <padding>
+        <Insets top="16.0" right="16.0" bottom="16.0" left="16.0"/>
+    </padding>
+
+    <VBox spacing="10.0" HBox.hgrow="ALWAYS" styleClass="terminal-card">
+        <HBox>
+            <Label text="Valuation Reports" styleClass="terminal-screen-title" HBox.hgrow="ALWAYS"/>
+            <HBox spacing="8.0">
+                <Button text="Filter" styleClass="terminal-outline-button"/>
+                <Button text="New Report" styleClass="terminal-primary-button"/>
+            </HBox>
+        </HBox>
+        <TableView fx:id="reportsTable" VBox.vgrow="ALWAYS" minHeight="460.0">
+            <columns>
+                <TableColumn fx:id="propertyColumn" text="Property / Asset" prefWidth="240.0"/>
+                <TableColumn fx:id="clientColumn" text="Client Entity" prefWidth="170.0"/>
+                <TableColumn fx:id="generationDateColumn" text="Generation Date" prefWidth="140.0"/>
+                <TableColumn fx:id="confidenceColumn" text="Confidence" prefWidth="120.0"/>
+                <TableColumn fx:id="statusColumn" text="Status" prefWidth="120.0"/>
+            </columns>
+        </TableView>
+        <Label fx:id="reportSummaryLabel" text="Report ID: VAL-2023-992 | Sections: 4" styleClass="terminal-muted-text"/>
+    </VBox>
+
+    <VBox spacing="10.0" prefWidth="340.0" styleClass="terminal-card">
+        <Label text="Alpha Tower Portfolio" styleClass="terminal-card-title"/>
+        <Label text="ID: VAL-2023-992" styleClass="terminal-chip-success"/>
+        <HBox spacing="6.0">
+            <Label text="Property ID" styleClass="terminal-label"/>
+            <TextField fx:id="propertyIdField" promptText="p-001" HBox.hgrow="ALWAYS" styleClass="stitch-input"/>
+        </HBox>
+        <VBox spacing="4.0">
+            <Label text="Include Sections" styleClass="terminal-label"/>
+            <HBox spacing="8.0">
+                <CheckBox fx:id="fmvCheckBox" text="FMV"/>
+                <CheckBox fx:id="comparablesCheckBox" text="Comparables"/>
+            </HBox>
+            <HBox spacing="8.0">
+                <CheckBox fx:id="rentalCheckBox" text="Rental"/>
+                <CheckBox fx:id="roiCheckBox" text="ROI"/>
+            </HBox>
+            <HBox spacing="8.0">
+                <CheckBox fx:id="trendCheckBox" text="Trend"/>
+                <CheckBox fx:id="heatmapCheckBox" text="Heatmap"/>
+            </HBox>
+        </VBox>
+        <TextArea fx:id="analystNotesArea" promptText="Analyst notes..." prefRowCount="3"/>
+        <Label text="Client: Nexus Capital" styleClass="terminal-muted-text"/>
+        <Label text="Analyst: J. Doe" styleClass="terminal-muted-text"/>
+        <Label text="Total Value: $142.5M" styleClass="terminal-kpi-value"/>
+        <Label text="Variance: +2.4%" styleClass="terminal-status-label"/>
+        <Label text="Comprehensive valuation report with market comps, DCF model refresh, and revised occupancy forecast." wrapText="true" styleClass="terminal-muted-text"/>
+        <Button text="Download PDF" styleClass="terminal-primary-button"/>
+        <HBox spacing="8.0">
+            <Button text="Share" styleClass="terminal-outline-button" HBox.hgrow="ALWAYS"/>
+            <Button text="Regen" styleClass="terminal-secondary-button" HBox.hgrow="ALWAYS"/>
+        </HBox>
+        <Button text="Generate Report" styleClass="terminal-primary-button" onAction="#onGenerateReport"/>
+        <Label fx:id="statusLabel" text="Report dashboard ready." styleClass="terminal-status-label"/>
+        <Button text="Full Preview" styleClass="terminal-link-button"/>
+    </VBox>
+</HBox>

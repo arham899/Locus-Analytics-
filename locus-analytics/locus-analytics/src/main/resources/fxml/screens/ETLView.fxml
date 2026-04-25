@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="14.0" alignment="TOP_LEFT" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.screen.ETLController"
+      styleClass="terminal-screen-root">
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+    </padding>
+    <HBox alignment="BOTTOM_LEFT" spacing="14.0">
+        <VBox spacing="4.0">
+            <Label text="Data Integration &amp; Pipeline Status" styleClass="terminal-section-title"/>
+            <Label text="Monitor ETL health, run pipelines, and track progress in real time." styleClass="terminal-muted-text"/>
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS"/>
+        <Button text="Load Last Run" onAction="#onLoadLastRun" styleClass="terminal-outline-button"/>
+        <Button text="Refresh Status" onAction="#onRefreshStatus" styleClass="terminal-outline-button"/>
+        <Button text="Rerun Failed" onAction="#onStartPipeline" styleClass="terminal-primary-button"/>
+    </HBox>
+
+    <GridPane hgap="12.0" vgap="12.0">
+        <VBox spacing="4.0" styleClass="terminal-kpi-card" GridPane.rowIndex="0" GridPane.columnIndex="0">
+            <Label text="Last Sync Time" styleClass="terminal-kpi-label"/>
+            <Label fx:id="lastRunTimeLabel" text="-" styleClass="terminal-kpi-value"/>
+            <Label fx:id="lastRunSummaryLabel" text="No previous run loaded." styleClass="terminal-muted-text"/>
+        </VBox>
+        <VBox spacing="4.0" styleClass="terminal-kpi-card" GridPane.rowIndex="0" GridPane.columnIndex="1">
+            <Label text="Successful Tasks" styleClass="terminal-kpi-label"/>
+            <Label fx:id="successCountLabel" text="0" styleClass="terminal-kpi-value"/>
+            <Label text="Completed without issues" styleClass="terminal-muted-text"/>
+        </VBox>
+        <VBox spacing="4.0" styleClass="terminal-kpi-card" GridPane.rowIndex="0" GridPane.columnIndex="2">
+            <Label text="Failed Tasks" styleClass="terminal-kpi-label"/>
+            <Label fx:id="failedCountLabel" text="0" styleClass="terminal-kpi-value terminal-error"/>
+            <Label text="Needs operator attention" styleClass="terminal-muted-text"/>
+        </VBox>
+        <VBox spacing="4.0" styleClass="terminal-kpi-card" GridPane.rowIndex="0" GridPane.columnIndex="3">
+            <Label text="Data Health" styleClass="terminal-kpi-label"/>
+            <Label fx:id="healthLabel" text="98.5%" styleClass="terminal-kpi-value"/>
+            <Label text="Pipeline availability score" styleClass="terminal-muted-text"/>
+        </VBox>
+    </GridPane>
+
+    <VBox spacing="10.0" styleClass="terminal-card">
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Active Pipelines" styleClass="terminal-card-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="Search pipelines..." styleClass="terminal-outline-button"/>
+            <Button text="Run Failed" onAction="#onStartPipeline" styleClass="terminal-primary-button"/>
+        </HBox>
+
+        <GridPane hgap="10.0" vgap="10.0">
+            <Label text="Pipeline Name" styleClass="terminal-kpi-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <Label text="Source" styleClass="terminal-kpi-label" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <Label text="Status" styleClass="terminal-kpi-label" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+            <Label text="Progress" styleClass="terminal-kpi-label" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+            <Label text="Actions" styleClass="terminal-kpi-label" GridPane.rowIndex="0" GridPane.columnIndex="4"/>
+
+            <Label text="Daily Yield Aggregation" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Label text="Internal_DB_v2" styleClass="terminal-muted-text" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label fx:id="stageLabel" text="PROCESSING" styleClass="terminal-chip-success" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+            <ProgressBar fx:id="progressBar" prefWidth="180.0" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+            <Button text="Pause" styleClass="terminal-link-button" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
+
+            <Label text="Historical Sales Dump" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Label text="External_API_1" styleClass="terminal-muted-text" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label text="FAILED" styleClass="terminal-chip-error" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+            <Label text="14% - Err: Connection Timeout" styleClass="terminal-muted-text" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+            <Button text="Rerun" onAction="#onStartPipeline" styleClass="terminal-outline-button" GridPane.rowIndex="2" GridPane.columnIndex="4"/>
+
+            <Label text="Property Listings Sync" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Label text="Zameen_Scraper" styleClass="terminal-muted-text" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label text="SUCCESS" styleClass="terminal-chip-warning" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+            <Label text="100% - Duration: 12m 4s" styleClass="terminal-muted-text" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
+            <Button text="Logs" styleClass="terminal-link-button" GridPane.rowIndex="3" GridPane.columnIndex="4"/>
+        </GridPane>
+
+        <BorderPane>
+            <left>
+                <Label fx:id="statusLabel" text="No active ETL job." styleClass="terminal-status-label"/>
+            </left>
+        </BorderPane>
+    </VBox>
+</VBox>

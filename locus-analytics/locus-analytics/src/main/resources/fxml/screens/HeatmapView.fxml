@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
+
+<BorderPane styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.locus.ui.controller.screen.HeatmapController">
+    <padding>
+        <Insets top="14.0" right="14.0" bottom="14.0" left="14.0"/>
+    </padding>
+
+    <left>
+        <VBox spacing="12.0" prefWidth="260.0" styleClass="terminal-card">
+            <Label text="Spatial Filters" styleClass="terminal-card-title"/>
+            <Label text="Primary Market" styleClass="terminal-label"/>
+            <ComboBox fx:id="cityComboBox" styleClass="stitch-input"/>
+            <Label text="Intensity Metric" styleClass="terminal-label"/>
+            <ComboBox fx:id="metricComboBox" styleClass="stitch-input"/>
+            <Label text="Granularity: Ward Level" styleClass="terminal-muted-text"/>
+            <Button text="Refresh Heatmap" styleClass="terminal-primary-button" onAction="#onLoadHeatmapData"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="10.0">
+            <Label text="Heatmap Intelligence" styleClass="terminal-screen-title"/>
+            <WebView fx:id="heatmapWebView" VBox.vgrow="ALWAYS"/>
+            <HBox spacing="8.0">
+                <Label text="1W" styleClass="terminal-chip"/>
+                <Label text="1M" styleClass="terminal-chip"/>
+                <Label text="3M" styleClass="terminal-chip-success"/>
+                <Label text="1Y" styleClass="terminal-chip"/>
+                <Label text="5Y" styleClass="terminal-chip"/>
+            </HBox>
+        </VBox>
+    </center>
+
+    <right>
+        <VBox spacing="12.0" prefWidth="320.0" styleClass="terminal-card">
+            <Label text="Spatial Insights" styleClass="terminal-card-title"/>
+            <Label text="Islington Cluster  |  Liquidity 84.2" styleClass="terminal-status-label"/>
+            <Button text="View Full Report" styleClass="terminal-outline-button"/>
+            <Label text="Top Hotspots" styleClass="terminal-label"/>
+            <TableView fx:id="heatmapTable" VBox.vgrow="ALWAYS" minHeight="260.0">
+                <columns>
+                    <TableColumn fx:id="localityColumn" text="Locality" prefWidth="140.0"/>
+                    <TableColumn fx:id="latitudeColumn" text="Lat" prefWidth="70.0"/>
+                    <TableColumn fx:id="longitudeColumn" text="Lng" prefWidth="70.0"/>
+                    <TableColumn fx:id="weightColumn" text="Score" prefWidth="70.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </right>
+
+    <bottom>
+        <Label fx:id="statusLabel" text="Spatial dashboard ready." styleClass="terminal-status-label" BorderPane.alignment="CENTER_LEFT"/>
+    </bottom>
+</BorderPane>

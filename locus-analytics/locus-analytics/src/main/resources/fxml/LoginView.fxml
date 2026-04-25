@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.LoginController"
+      styleClass="stitch-login-root">
+    <children>
+        <VBox spacing="14.0" styleClass="stitch-login-left-pane" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets top="38.0" right="58.0" bottom="38.0" left="58.0"/>
+            </padding>
+            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                <ImageView fx:id="brandLogoView" fitWidth="150.0" preserveRatio="true" pickOnBounds="true"/>
+                <Label text="LOCUS Analytics" styleClass="stitch-login-mini-brand"/>
+            </HBox>
+
+            <Pane prefHeight="26.0"/>
+            <Label text="Welcome Back!" styleClass="stitch-login-heading"/>
+            <Label text="Sign in to access your analytics dashboard and make data-driven real estate decisions."
+                   wrapText="true" styleClass="stitch-login-subheading"/>
+
+            <VBox spacing="10.0" maxWidth="440.0">
+                <Label text="Email Address" styleClass="stitch-form-label"/>
+                <TextField fx:id="emailField" promptText="analyst@firm.com" styleClass="stitch-input"/>
+
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Password" styleClass="stitch-form-label"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                    <Hyperlink text="Forgot password?" onAction="#onForgotPassword" styleClass="stitch-link"/>
+                </HBox>
+                <PasswordField fx:id="passwordField" promptText="••••••••" styleClass="stitch-input"/>
+
+                <Button fx:id="loginButton" text="Sign In  →" onAction="#onLogin" defaultButton="true"
+                        maxWidth="1.7976931348623157E308" styleClass="stitch-login-submit"/>
+            </VBox>
+
+            <Pane prefHeight="18.0"/>
+            <Pane styleClass="stitch-divider"/>
+            <Label text="Quick Access Demos" styleClass="stitch-demo-label"/>
+            <HBox spacing="12.0" alignment="CENTER_LEFT" maxWidth="440.0">
+                <Button text="Use Admin Demo" onAction="#onFillAdminDemo" styleClass="stitch-demo-button" HBox.hgrow="ALWAYS"/>
+                <Button text="Use Analyst Demo" onAction="#onFillAnalystDemo" styleClass="stitch-demo-button" HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <Label fx:id="feedbackLabel" wrapText="true" styleClass="stitch-feedback-label"/>
+        </VBox>
+
+        <StackPane styleClass="stitch-login-right-pane" HBox.hgrow="ALWAYS">
+            <children>
+                <Pane styleClass="stitch-hero-bg-image"/>
+                <Pane styleClass="stitch-hero-glow"/>
+                <VBox spacing="20.0" styleClass="stitch-hero-content">
+                    <padding>
+                        <Insets top="52.0" right="52.0" bottom="46.0" left="52.0"/>
+                    </padding>
+                    <Pane VBox.vgrow="ALWAYS"/>
+                    <Label text="Revolutionize Real Estate with Smarter Analytics" wrapText="true" styleClass="stitch-hero-heading"/>
+                    <VBox spacing="12.0" styleClass="stitch-quote-card">
+                        <Label text="❝" styleClass="stitch-quote-mark"/>
+                        <Label text="&quot;LOCUS Analytics transformed how we evaluate market opportunities. It's fast, reliable, and decision-ready.&quot;"
+                               wrapText="true" styleClass="stitch-hero-quote"/>
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <Label text="AA" styleClass="stitch-avatar"/>
+                            <VBox spacing="2.0">
+                                <Label text="Ayaan Aman" styleClass="stitch-hero-person-name"/>
+                                <Label text="Frontend Architect" styleClass="stitch-hero-person-role"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                    <Pane VBox.vgrow="ALWAYS"/>
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="SYS_STATUS: ONLINE" styleClass="stitch-hero-footer"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Label text="v2.4.1" styleClass="stitch-hero-footer"/>
+                    </HBox>
+                </VBox>
+            </children>
+        </StackPane>
+    </children>
+</HBox>

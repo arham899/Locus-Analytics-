@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.ScatterChart?>
+<?import javafx.scene.chart.XYChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.screen.ClusterController">
+    <padding>
+        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0"/>
+    </padding>
+
+    <HBox>
+        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+            <Label text="ClusterView" styleClass="terminal-screen-title"/>
+            <Label text="Investment Cluster Discovery &amp; Analysis" styleClass="terminal-muted-text"/>
+        </VBox>
+        <HBox spacing="8.0">
+            <Button text="Filters" styleClass="terminal-outline-button"/>
+            <Button text="Export Data" styleClass="terminal-outline-button"/>
+        </HBox>
+    </HBox>
+
+    <HBox spacing="8.0" styleClass="terminal-card">
+        <Label text="City" styleClass="terminal-label"/>
+        <ComboBox fx:id="cityComboBox" styleClass="stitch-input"/>
+        <Label text="Type" styleClass="terminal-label"/>
+        <ComboBox fx:id="propertyTypeComboBox" styleClass="stitch-input"/>
+        <Label text="Min Listings" styleClass="terminal-label"/>
+        <TextField fx:id="minListingsField" prefWidth="90.0" styleClass="stitch-input"/>
+        <Button text="Identify" styleClass="terminal-primary-button" onAction="#onIdentifyClusters"/>
+    </HBox>
+
+    <HBox spacing="12.0" VBox.vgrow="ALWAYS">
+        <VBox spacing="12.0" HBox.hgrow="ALWAYS">
+            <VBox spacing="8.0" styleClass="terminal-card" VBox.vgrow="ALWAYS">
+                <Label text="Risk vs Return Profile" styleClass="terminal-card-title"/>
+                <ScatterChart minHeight="320.0" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <NumberAxis label="Risk (Volatility Index)"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Exp. Return (CAGR)"/>
+                    </yAxis>
+                    <data>
+                        <XYChart.Series name="Clusters">
+                            <data>
+                                <XYChart.Data XValue="70.0" YValue="20.0"/>
+                                <XYChart.Data XValue="30.0" YValue="10.0"/>
+                                <XYChart.Data XValue="20.0" YValue="15.0"/>
+                                <XYChart.Data XValue="85.0" YValue="22.0"/>
+                            </data>
+                        </XYChart.Series>
+                    </data>
+                </ScatterChart>
+            </VBox>
+
+            <HBox spacing="10.0">
+                <VBox spacing="4.0" styleClass="terminal-kpi-card" HBox.hgrow="ALWAYS">
+                    <Label text="GROWTH" styleClass="terminal-kpi-label"/>
+                    <Label text="22.4% CAGR" styleClass="terminal-kpi-value"/>
+                    <Label text="Top Decile" styleClass="terminal-status-label"/>
+                </VBox>
+                <VBox spacing="4.0" styleClass="terminal-kpi-card" HBox.hgrow="ALWAYS">
+                    <Label text="VALUE" styleClass="terminal-kpi-label"/>
+                    <Label text="12.1% CAGR" styleClass="terminal-kpi-value"/>
+                    <Label text="Stable Yield" styleClass="terminal-muted-text"/>
+                </VBox>
+                <VBox spacing="4.0" styleClass="terminal-kpi-card" HBox.hgrow="ALWAYS">
+                    <Label text="PREMIUM" styleClass="terminal-kpi-label"/>
+                    <Label text="8.5% CAGR" styleClass="terminal-kpi-value"/>
+                    <Label text="Low Volatility" styleClass="terminal-muted-text"/>
+                </VBox>
+                <VBox spacing="4.0" styleClass="terminal-kpi-card" HBox.hgrow="ALWAYS">
+                    <Label text="EMERGING" styleClass="terminal-kpi-label"/>
+                    <Label text="34.2% CAGR" styleClass="terminal-kpi-value"/>
+                    <Label text="High Risk" styleClass="terminal-chip-error"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox spacing="10.0" styleClass="terminal-card" prefWidth="320.0">
+            <Label text="Growth Cluster" styleClass="terminal-card-title"/>
+            <Label text="High momentum assets with strong QoQ expansion." styleClass="terminal-muted-text" wrapText="true"/>
+            <HBox spacing="8.0">
+                <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                    <Label text="Median Price" styleClass="terminal-kpi-label"/>
+                    <Label text="$142.50" styleClass="terminal-kpi-value"/>
+                </VBox>
+                <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                    <Label text="Exp CAGR (5Y)" styleClass="terminal-kpi-label"/>
+                    <Label text="22.4%" styleClass="terminal-kpi-value"/>
+                </VBox>
+            </HBox>
+            <Label text="System Insight: Positive correlation with AI infra indices; concentration risk elevated." styleClass="terminal-muted-text" wrapText="true"/>
+            <Button text="Track Cluster" styleClass="terminal-primary-button"/>
+            <Button text="Open in Compare" styleClass="terminal-outline-button"/>
+        </VBox>
+    </HBox>
+
+    <VBox spacing="8.0" styleClass="terminal-card">
+        <Label text="Cluster Table (Service Output)" styleClass="terminal-card-title"/>
+        <TableView fx:id="clusterTable" minHeight="180.0">
+        <columns>
+            <TableColumn fx:id="localityColumn" text="Locality"/>
+            <TableColumn fx:id="scoreColumn" text="Score"/>
+            <TableColumn fx:id="appreciationColumn" text="Appreciation"/>
+        </columns>
+    </TableView>
+    </VBox>
+    <Label fx:id="statusLabel" text="Cluster dashboard ready." styleClass="terminal-status-label"/>
+</VBox>

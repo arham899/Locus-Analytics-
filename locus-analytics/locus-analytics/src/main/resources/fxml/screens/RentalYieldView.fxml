@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.screen.RentalYieldController">
+    <padding>
+        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0"/>
+    </padding>
+
+    <HBox>
+        <VBox spacing="4.0">
+            <Label text="Rental Yield Tracker" styleClass="terminal-screen-title"/>
+            <Label text="Aggregate yield performance modeling across major asset localities." styleClass="terminal-muted-text"/>
+        </VBox>
+        <HBox spacing="8.0">
+            <Label text="LIVE VIEW" styleClass="terminal-chip-success"/>
+        </HBox>
+    </HBox>
+
+    <GridPane hgap="12.0" vgap="12.0">
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label text="GROSS YIELD" styleClass="terminal-kpi-label"/>
+            <Label fx:id="grossYieldLabel" text="5.84%" styleClass="terminal-kpi-value"/>
+            <Label text="+0.12%" styleClass="terminal-status-label"/>
+        </VBox>
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label text="NET YIELD (EST)" styleClass="terminal-kpi-label"/>
+            <Label fx:id="netYieldLabel" text="4.12%" styleClass="terminal-kpi-value"/>
+            <Label text="stable" styleClass="terminal-muted-text"/>
+        </VBox>
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <Label text="CITY AVERAGE" styleClass="terminal-kpi-label"/>
+            <Label fx:id="cityAverageLabel" text="4.90%" styleClass="terminal-kpi-value"/>
+            <Label text="benchmark baseline" styleClass="terminal-muted-text"/>
+        </VBox>
+    </GridPane>
+
+    <VBox spacing="8.0" styleClass="terminal-card">
+        <Label text="Yield Inputs" styleClass="terminal-card-title"/>
+        <GridPane hgap="10.0" vgap="10.0">
+            <Label text="Property Value" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="propertyValueField" promptText="25000000" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="Monthly Rent" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+            <TextField fx:id="monthlyRentField" promptText="130000" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+            <Label text="Annual Expenses" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="annualExpensesField" promptText="210000" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        </GridPane>
+    </VBox>
+
+    <HBox spacing="12.0" VBox.vgrow="ALWAYS">
+        <VBox spacing="10.0" styleClass="terminal-card" HBox.hgrow="ALWAYS">
+            <Label text="Yield Distribution by Locality Band" styleClass="terminal-card-title"/>
+            <Label text="Bands A-G visualized with relative yield intensity." styleClass="terminal-muted-text"/>
+            <HBox spacing="8.0">
+                <Label text="Stress (-2%)" styleClass="terminal-chip-error"/>
+                <Label text="Base (Current)" styleClass="terminal-chip-success"/>
+                <Label text="Optimistic (+2%)" styleClass="terminal-chip"/>
+            </HBox>
+            <HBox spacing="8.0">
+                <Label text="High Yield Target" styleClass="terminal-chip-success"/>
+                <Label text="Stable Income" styleClass="terminal-chip"/>
+                <Label text="Watchlist" styleClass="terminal-chip-warning"/>
+            </HBox>
+        </VBox>
+        <VBox spacing="10.0" styleClass="terminal-card" prefWidth="320.0">
+            <Label text="Locality Ranking" styleClass="terminal-card-title"/>
+            <TableView minHeight="250.0" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn text="Locality" prefWidth="150.0"/>
+                    <TableColumn text="Yield" prefWidth="80.0"/>
+                    <TableColumn text="Trend" prefWidth="80.0"/>
+                </columns>
+            </TableView>
+            <Button text="View Full Report" styleClass="terminal-outline-button"/>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="8.0">
+        <Button text="Recalculate" styleClass="terminal-primary-button" onAction="#onCalculateRentalYield"/>
+        <Button text="Reset" styleClass="terminal-secondary-button" onAction="#onReset"/>
+    </HBox>
+    <Label fx:id="statusLabel" text="Yield dashboard ready." styleClass="terminal-status-label"/>
+</VBox>

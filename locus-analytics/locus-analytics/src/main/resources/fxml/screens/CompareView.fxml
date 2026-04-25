@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.screen.CompareController">
+    <padding>
+        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0"/>
+    </padding>
+
+    <HBox>
+        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+            <Label text="Asset Comparison" styleClass="terminal-screen-title"/>
+            <Label text="Compare pricing, yield, ROI potential, and market trend scores across selected assets." styleClass="terminal-muted-text"/>
+        </VBox>
+        <HBox spacing="8.0">
+            <Button text="Save View" styleClass="terminal-outline-button" onAction="#onLoadSampleIds"/>
+            <Button text="Export Matrix" styleClass="terminal-primary-button" onAction="#onRunCompare"/>
+        </HBox>
+    </HBox>
+
+    <HBox spacing="10.0">
+        <Label text="City: Dubai" styleClass="terminal-chip"/>
+        <Label text="Type: Commercial" styleClass="terminal-chip"/>
+        <Label text="Budget: $5M - $15M" styleClass="terminal-chip"/>
+    </HBox>
+
+    <HBox spacing="8.0" styleClass="terminal-card">
+        <Label text="Property IDs" styleClass="terminal-label"/>
+        <TextField fx:id="propertyIdsField" text="p-101,p-102,p-103" HBox.hgrow="ALWAYS" styleClass="stitch-input"/>
+        <Button text="Load Sample" styleClass="terminal-outline-button" onAction="#onLoadSampleIds"/>
+        <Button text="Run Compare" styleClass="terminal-primary-button" onAction="#onRunCompare"/>
+    </HBox>
+
+    <GridPane hgap="10.0" vgap="10.0">
+        <VBox spacing="4.0" styleClass="terminal-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label text="Aura Tower Crest" styleClass="terminal-card-title"/>
+            <Label text="DIFC, Dubai" styleClass="terminal-muted-text"/>
+            <Label text="BEST VALUE" styleClass="terminal-chip-success"/>
+        </VBox>
+        <VBox spacing="4.0" styleClass="terminal-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label text="Nexus Block 4" styleClass="terminal-card-title"/>
+            <Label text="Business Bay, Dubai" styleClass="terminal-muted-text"/>
+            <Label text="HIGH RISK" styleClass="terminal-chip-error"/>
+        </VBox>
+        <VBox spacing="4.0" styleClass="terminal-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <Label text="The Zenith Hub" styleClass="terminal-card-title"/>
+            <Label text="Marina, Dubai" styleClass="terminal-muted-text"/>
+            <Label text="MARKET FAVORABLE" styleClass="terminal-chip-success"/>
+        </VBox>
+    </GridPane>
+
+    <VBox spacing="10.0" styleClass="terminal-card" VBox.vgrow="ALWAYS">
+        <Label text="Comparison Matrix" styleClass="terminal-card-title"/>
+        <TableView fx:id="comparisonTable" VBox.vgrow="ALWAYS" minHeight="280.0">
+            <columns>
+                <TableColumn fx:id="propertyIdColumn" text="Property ID" prefWidth="140.0"/>
+                <TableColumn fx:id="locationColumn" text="Locality" prefWidth="180.0"/>
+                <TableColumn fx:id="priceColumn" text="Price" prefWidth="170.0"/>
+                <TableColumn fx:id="areaColumn" text="Area" prefWidth="140.0"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <Label fx:id="summaryLabel" text="Compared 3 properties" styleClass="terminal-muted-text"/>
+    <Label fx:id="statusLabel" text="Comparison dashboard ready." styleClass="terminal-status-label"/>
+</VBox>

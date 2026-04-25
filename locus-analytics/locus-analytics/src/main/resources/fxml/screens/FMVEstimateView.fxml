@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.locus.ui.controller.screen.FMVEstimateController">
+    <padding>
+        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0"/>
+    </padding>
+
+    <VBox spacing="4.0">
+        <Label text="Market Intelligence Dashboard" styleClass="terminal-screen-title"/>
+        <Label text="Inspect valuation benchmarks, liquidity indicators, and comparable asset pulse in one pane." styleClass="terminal-muted-text"/>
+    </VBox>
+
+    <GridPane hgap="12.0" vgap="12.0">
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label text="FMV ESTIMATE" styleClass="terminal-kpi-label"/>
+            <Label fx:id="estimatedFmvLabel" text="PKR 31.5M" styleClass="terminal-kpi-value"/>
+            <Label text="Updated 12m trend" styleClass="terminal-muted-text"/>
+        </VBox>
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label text="CONFIDENCE BAND" styleClass="terminal-kpi-label"/>
+            <Label fx:id="confidenceLabel" text="86%" styleClass="terminal-kpi-value"/>
+            <Label text="High reliability" styleClass="terminal-status-label"/>
+        </VBox>
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <Label text="DRIVER SIGNAL" styleClass="terminal-kpi-label"/>
+            <Label fx:id="factorsLabel" text="Demand + Transit + Inventory" styleClass="terminal-kpi-value" wrapText="true"/>
+            <Label text="Composite strength" styleClass="terminal-muted-text"/>
+        </VBox>
+    </GridPane>
+
+    <VBox spacing="8.0" styleClass="terminal-card">
+        <Label text="Valuation Inputs" styleClass="terminal-card-title"/>
+        <GridPane hgap="10.0" vgap="10.0">
+            <Label text="City" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="cityComboBox" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="Locality" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="localityComboBox" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+            <Label text="Property Type" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <ComboBox fx:id="propertyTypeComboBox" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="Area (sq.ft.)" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+            <TextField fx:id="areaField" promptText="2250" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+            <Label text="Bedrooms" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <TextField fx:id="bedroomsField" promptText="4" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Label text="Bathrooms" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+            <TextField fx:id="bathroomsField" promptText="3" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+        </GridPane>
+        <HBox spacing="10.0">
+            <Button text="Run Market Intelligence" styleClass="terminal-primary-button" onAction="#onEstimateFmv"/>
+            <Button text="Reset Inputs" styleClass="terminal-secondary-button" onAction="#onClear"/>
+        </HBox>
+    </VBox>
+
+    <VBox spacing="10.0" styleClass="terminal-card">
+        <HBox spacing="10.0">
+            <Label text="Comparable Market Watch" styleClass="terminal-card-title"/>
+            <Button text="Refresh" styleClass="terminal-outline-button" onAction="#onEstimateFmv"/>
+            <Button text="Clear" styleClass="terminal-secondary-button" onAction="#onClear"/>
+        </HBox>
+        <TableView fx:id="comparablesTable" prefHeight="210.0" minHeight="210.0" maxHeight="210.0">
+            <columns>
+                <TableColumn fx:id="comparableLocalityColumn" text="Locality" prefWidth="220.0"/>
+                <TableColumn fx:id="comparableTypeColumn" text="Type" prefWidth="130.0"/>
+                <TableColumn fx:id="comparableAreaColumn" text="Area" prefWidth="140.0"/>
+                <TableColumn fx:id="comparablePriceColumn" text="Price" prefWidth="220.0"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <HBox spacing="8.0" styleClass="terminal-card">
+        <Label text="Dashboard End" styleClass="terminal-kpi-label"/>
+        <Label text="All widgets loaded for current view." styleClass="terminal-muted-text"/>
+    </HBox>
+
+    <Label fx:id="statusLabel" text="Market intelligence feed ready." styleClass="terminal-status-label"/>
+</VBox>
