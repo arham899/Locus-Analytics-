@@ -1,8 +1,8 @@
 package com.locus.dao;
 
 import com.locus.model.Property;
-import com.locus.model.SearchFilter;
-import com.locus.model.TrendPoint;
+import com.locus.model.dto.SearchFilter;
+import com.locus.model.dto.TrendPoint;
 
 import java.time.LocalDate;
 import java.util.List;
