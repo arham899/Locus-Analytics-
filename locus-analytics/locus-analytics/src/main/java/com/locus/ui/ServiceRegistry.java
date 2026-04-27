@@ -1,5 +1,9 @@
 package com.locus.ui;
 
+import com.locus.service.impl.AuthenticationServiceImpl;
+import com.locus.dao.impl.UserDAOImpl;
+import com.locus.dao.UserDAO;
+
 import com.locus.service.AuthenticationService;
 import com.locus.service.CompareService;
 import com.locus.service.ConfigurationService;
@@ -33,7 +37,7 @@ import com.locus.service.impl.ValuationServiceStub;
  */
 public class ServiceRegistry {
 
-    private final AuthenticationService authenticationService = new AuthenticationServiceStub();
+    private final AuthenticationService authenticationService = new AuthenticationServiceImpl(new UserDAOImpl());
     private final ValuationService valuationService = new ValuationServiceStub();
     private final RentalYieldService rentalYieldService = new RentalYieldServiceStub();
     private final ROIService roiService = new ROIServiceStub();

@@ -1,6 +1,8 @@
 package com.locus.dao;
+
 import com.locus.model.Valuation;
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ValuationDAO {
@@ -9,5 +11,5 @@ public interface ValuationDAO {
 
     boolean insert(Valuation valuation);
 
-    List<Valuation> findByDateRange(LocalDate start, LocalDate end);
+    List<Valuation> findByDateRange(LocalDateTime start, LocalDateTime end);
 }

@@ -19,6 +19,16 @@ public abstract class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String passwordHash;
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     // ── Constructors ──────────────────────────────────────────────────
 
     /** Protected constructor for subclasses. */
