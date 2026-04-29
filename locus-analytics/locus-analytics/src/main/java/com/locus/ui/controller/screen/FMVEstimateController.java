@@ -92,9 +92,31 @@ public class FMVEstimateController implements Initializable {
         }
         if (comparableAreaColumn != null) {
             comparableAreaColumn.setCellValueFactory(new PropertyValueFactory<>("area"));
+            comparableAreaColumn.setCellFactory(tc -> new javafx.scene.control.TableCell<Property, Double>() {
+                @Override
+                protected void updateItem(Double area, boolean empty) {
+                    super.updateItem(area, empty);
+                    if (empty || area == null) {
+                        setText(null);
+                    } else {
+                        setText(String.format("%,.0f", area));
+                    }
+                }
+            });
         }
         if (comparablePriceColumn != null) {
             comparablePriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+            comparablePriceColumn.setCellFactory(tc -> new javafx.scene.control.TableCell<Property, Double>() {
+                @Override
+                protected void updateItem(Double price, boolean empty) {
+                    super.updateItem(price, empty);
+                    if (empty || price == null) {
+                        setText(null);
+                    } else {
+                        setText(UiFormatters.currency(price));
+                    }
+                }
+            });
         }
 
         // Dashboard mode fallback defaults

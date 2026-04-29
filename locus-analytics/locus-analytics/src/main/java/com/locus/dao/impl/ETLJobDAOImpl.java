@@ -82,12 +82,19 @@ public class ETLJobDAOImpl implements ETLJobDAO {
                 records_loaded,
                 errors,
                 status,
-                current_stage,
-                progress_percent,
                 created_at,
                 updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (job_id) DO UPDATE SET
+                admin_id = EXCLUDED.admin_id,
+                run_date = EXCLUDED.run_date,
+                records_extracted = EXCLUDED.records_extracted,
+                records_cleaned = EXCLUDED.records_cleaned,
+                records_loaded = EXCLUDED.records_loaded,
+                errors = EXCLUDED.errors,
+                status = EXCLUDED.status,
+                updated_at = EXCLUDED.updated_at
         """;
 
         try (Connection conn = dataSource.getConnection();
@@ -104,16 +111,14 @@ public class ETLJobDAOImpl implements ETLJobDAO {
             stmt.setInt(7, job.getErrors());
 
             stmt.setString(8, job.getStatus());
-            stmt.setString(9, job.getCurrentStage());
-            stmt.setInt(10, job.getProgressPercent());
 
-            stmt.setTimestamp(11,
+            stmt.setTimestamp(9,
                     job.getCreatedAt() != null
                             ? Timestamp.valueOf(job.getCreatedAt())
                             : new Timestamp(System.currentTimeMillis())
             );
 
-            stmt.setTimestamp(12,
+            stmt.setTimestamp(10,
                     job.getUpdatedAt() != null
                             ? Timestamp.valueOf(job.getUpdatedAt())
                             : new Timestamp(System.currentTimeMillis())
@@ -147,8 +152,6 @@ public class ETLJobDAOImpl implements ETLJobDAO {
         job.setErrors(rs.getInt("errors"));
 
         job.setStatus(rs.getString("status"));
-        job.setCurrentStage(rs.getString("current_stage"));
-        job.setProgressPercent(rs.getInt("progress_percent"));
 
         Timestamp created = rs.getTimestamp("created_at");
         if (created != null) {

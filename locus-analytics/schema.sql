@@ -1,6 +1,6 @@
--- Locus Analytics Database Schema
+-- Locus Analytics — PostgreSQL Schema
 -- Author: Fasih
--- Day 1 DDL
+-- All tables are mirrored in Oracle (see schema_oracle.sql)
 
 DROP FUNCTION IF EXISTS update_timestamp CASCADE;
 
