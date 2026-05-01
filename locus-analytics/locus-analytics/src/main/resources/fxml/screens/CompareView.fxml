@@ -40,6 +40,7 @@
         <TextField fx:id="propertyIdsField" text="p-101,p-102,p-103" HBox.hgrow="ALWAYS" styleClass="stitch-input"/>
         <Button text="Load Sample" styleClass="terminal-outline-button" onAction="#onLoadSampleIds"/>
         <Button text="Run Compare" styleClass="terminal-primary-button" onAction="#onRunCompare"/>
+        <Button text="Export to Report" styleClass="terminal-outline-button" onAction="#onExportToReport"/>
     </HBox>
 
     <GridPane hgap="10.0" vgap="10.0">
@@ -62,6 +63,15 @@
 
     <VBox spacing="10.0" styleClass="terminal-card" VBox.vgrow="ALWAYS">
         <Label text="Comparison Matrix" styleClass="terminal-card-title"/>
+        <TableView fx:id="sideBySideTable" minHeight="250.0" prefHeight="250.0" maxHeight="250.0">
+            <columns>
+                <TableColumn fx:id="metricColumn" text="Metric" prefWidth="190.0"/>
+                <TableColumn fx:id="property1ValueColumn" text="Property 1" prefWidth="200.0"/>
+                <TableColumn fx:id="property2ValueColumn" text="Property 2" prefWidth="200.0"/>
+                <TableColumn fx:id="property3ValueColumn" text="Property 3" prefWidth="200.0"/>
+                <TableColumn fx:id="property4ValueColumn" text="Property 4" prefWidth="200.0"/>
+            </columns>
+        </TableView>
         <TableView fx:id="comparisonTable" VBox.vgrow="ALWAYS" minHeight="280.0">
             <columns>
                 <TableColumn fx:id="propertyIdColumn" text="Property ID" prefWidth="140.0"/>

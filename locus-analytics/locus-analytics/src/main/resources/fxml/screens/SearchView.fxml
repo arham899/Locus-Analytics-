@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -48,11 +49,22 @@
 
             <Label text="Property Type" styleClass="terminal-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
             <ComboBox fx:id="propertyTypeComboBox" maxWidth="1.7976931348623157E308" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Locality" styleClass="terminal-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="localityComboBox" maxWidth="1.7976931348623157E308" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
             <Label text="Price Range (PKR)" styleClass="terminal-label" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
             <HBox spacing="8.0" GridPane.rowIndex="1" GridPane.columnIndex="3">
                 <TextField fx:id="minPriceField" promptText="Min"/>
                 <TextField fx:id="maxPriceField" promptText="Max"/>
             </HBox>
+            <Label text="Area Range (sq.ft.)" styleClass="terminal-label" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+            <HBox spacing="8.0" GridPane.rowIndex="2" GridPane.columnIndex="3">
+                <TextField fx:id="minAreaField" promptText="Min"/>
+                <TextField fx:id="maxAreaField" promptText="Max"/>
+            </HBox>
+            <Label text="Bedrooms" styleClass="terminal-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="bedroomsComboBox" maxWidth="1.7976931348623157E308" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label text="Bathrooms" styleClass="terminal-label" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+            <ComboBox fx:id="bathroomsComboBox" maxWidth="1.7976931348623157E308" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
         </GridPane>
 
         <HBox spacing="10.0">
@@ -61,7 +73,9 @@
             <Label text="Type: Commercial" styleClass="terminal-chip"/>
             <Button text="Clear All" onAction="#onClearFilters" styleClass="terminal-link-button"/>
             <Pane HBox.hgrow="ALWAYS"/>
-            <Button text="Search" onAction="#onSearch" styleClass="terminal-primary-button"/>
+            <ProgressIndicator fx:id="loadingIndicator" maxWidth="22.0" maxHeight="22.0" visible="false" managed="false" styleClass="form-loading-indicator"/>
+            <Button fx:id="searchButton" text="Search" onAction="#onSearch" styleClass="terminal-primary-button"/>
+            <Button fx:id="addToCompareButton" text="Add to Compare" onAction="#onAddToCompare" styleClass="terminal-outline-button"/>
         </HBox>
     </VBox>
 
@@ -78,22 +92,25 @@
                 <TableColumn fx:id="idColumn" text="Property Name" prefWidth="220.0"/>
                 <TableColumn fx:id="localityColumn" text="Location" prefWidth="220.0"/>
                 <TableColumn fx:id="priceColumn" text="Price (PKR)" prefWidth="170.0"/>
-                <TableColumn fx:id="typeColumn" text="FMV Variance" prefWidth="170.0"/>
-                <TableColumn fx:id="cityColumn" text="Est. Yield %" prefWidth="150.0"/>
+                <TableColumn fx:id="typeColumn" text="Type" prefWidth="120.0"/>
+                <TableColumn fx:id="areaColumn" text="Area" prefWidth="110.0"/>
+                <TableColumn fx:id="bedroomsColumn" text="Beds" prefWidth="70.0"/>
+                <TableColumn fx:id="bathroomsColumn" text="Baths" prefWidth="70.0"/>
+                <TableColumn fx:id="listingDateColumn" text="Listing Date" prefWidth="150.0"/>
+                <TableColumn fx:id="cityColumn" text="City" prefWidth="120.0"/>
             </columns>
         </TableView>
+        <Label fx:id="emptyStateLabel" text="No properties found. Try broadening your filters (city, price, or area)." styleClass="terminal-muted-text" visible="false" managed="false"/>
         <BorderPane>
             <left>
                 <Label fx:id="resultSummaryLabel" text="Showing 1 to 4 of 1,204 entries" styleClass="terminal-muted-text"/>
             </left>
             <right>
                 <HBox spacing="6.0">
-                    <Button text="Previous" styleClass="terminal-outline-button"/>
-                    <Button text="1" styleClass="terminal-primary-button"/>
-                    <Button text="2" styleClass="terminal-outline-button"/>
-                    <Button text="3" styleClass="terminal-outline-button"/>
-                    <Label text="..." styleClass="terminal-muted-text"/>
-                    <Button text="Next" styleClass="terminal-outline-button"/>
+                    <Button fx:id="previousPageButton" text="Previous" styleClass="terminal-outline-button" onAction="#onPreviousPage"/>
+                    <Label fx:id="currentPageLabel" text="Page 1 / 1" styleClass="terminal-muted-text"/>
+                    <Button fx:id="nextPageButton" text="Next" styleClass="terminal-outline-button" onAction="#onNextPage"/>
+                    <ComboBox fx:id="pageSizeComboBox" promptText="Page Size"/>
                 </HBox>
             </right>
         </BorderPane>

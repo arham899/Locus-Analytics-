@@ -11,6 +11,7 @@ import com.locus.service.HeatmapService;
 import com.locus.service.InvestmentClusterService;
 import com.locus.service.ListingManagementService;
 import com.locus.service.PriceTrendService;
+import com.locus.service.ReportPdfService;
 import com.locus.service.ROIService;
 import com.locus.service.RentalYieldService;
 import com.locus.service.SearchService;
@@ -25,6 +26,7 @@ import com.locus.service.impl.ROIServiceImpl;
 import com.locus.service.impl.SearchServiceImpl;
 import com.locus.service.impl.CompareServiceImpl;
 import com.locus.service.impl.PriceTrendServiceImpl;
+import com.locus.service.impl.ReportPdfServiceImpl;
 import com.locus.service.impl.HeatmapServiceImpl;
 import com.locus.service.impl.InvestmentClusterServiceImpl;
 
@@ -68,6 +70,7 @@ public class ServiceRegistry {
 
     // ── Real Services (Phase 2 — Fasih) ─────────────
     private final ValuationReportService valuationReportService = new ValuationReportServiceImpl(propertyDAO, valuationDAO);
+    private final ReportPdfService reportPdfService = new ReportPdfServiceImpl();
     private final ETLService etlService = new ETLServiceImpl(etlJobDAO);
     private final ListingManagementService listingManagementService = new ListingManagementServiceImpl(propertyDAO);
     private final ConfigurationService configurationService = new ConfigurationServiceImpl(configDAO);
@@ -110,6 +113,10 @@ public class ServiceRegistry {
 
     public ValuationReportService valuationReportService() {
         return valuationReportService;
+    }
+
+    public ReportPdfService reportPdfService() {
+        return reportPdfService;
     }
 
     public ETLService etlService() {

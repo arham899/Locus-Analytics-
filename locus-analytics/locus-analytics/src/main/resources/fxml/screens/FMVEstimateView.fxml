@@ -4,9 +4,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
@@ -56,13 +59,23 @@
             <TextField fx:id="areaField" promptText="2250" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
 
             <Label text="Bedrooms" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <TextField fx:id="bedroomsField" promptText="4" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Spinner fx:id="bedroomsSpinner" styleClass="stitch-input" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
             <Label text="Bathrooms" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-            <TextField fx:id="bathroomsField" promptText="3" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+            <Spinner fx:id="bathroomsSpinner" styleClass="stitch-input" editable="true" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+
+            <Label text="Amenities" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="3">
+                <CheckBox fx:id="parkingAmenityCheck" text="Parking"/>
+                <CheckBox fx:id="furnishedAmenityCheck" text="Furnished"/>
+                <CheckBox fx:id="securityAmenityCheck" text="Security"/>
+                <CheckBox fx:id="liftAmenityCheck" text="Lift"/>
+            </HBox>
         </GridPane>
         <HBox spacing="10.0">
-            <Button text="Run Market Intelligence" styleClass="terminal-primary-button" onAction="#onEstimateFmv"/>
+            <Button fx:id="runEstimateButton" text="Run Market Intelligence" styleClass="terminal-primary-button" onAction="#onEstimateFmv"/>
+            <Button fx:id="generateReportButton" text="Generate Report" styleClass="terminal-outline-button" onAction="#onGenerateReport"/>
             <Button text="Reset Inputs" styleClass="terminal-secondary-button" onAction="#onClear"/>
+            <ProgressIndicator fx:id="loadingIndicator" maxWidth="22.0" maxHeight="22.0" visible="false" managed="false" styleClass="form-loading-indicator"/>
         </HBox>
     </VBox>
 

@@ -9,23 +9,23 @@ public class TestConnection {
         try (var conn = DBConnection.getDataSource().getConnection();
              Statement stmt = conn.createStatement()) {
             
-            System.out.println("✅ DB Connected Successfully!");
+            System.out.println("DB Connected Successfully!");
 
             // Better Test: Check if we can read the property table
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM property");
             if (rs.next()) {
                 int count = rs.getInt(1);
-                System.out.println("📊 Total Properties in Database: " + count);
+                System.out.println("Total Properties in Database: " + count);
                 
                 if (count == 0) {
-                    System.out.println("⚠️ Warning: Your database is connected but the tables are EMPTY.");
+                    System.out.println("Warning: Your database is connected but the tables are EMPTY.");
                 } else {
-                    System.out.println("🚀 Success! Data is loaded and ready.");
+                    System.out.println("Success! Data is loaded and ready.");
                 }
             }
 
         } catch (Exception e) {
-            System.err.println("❌ Error: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
             e.printStackTrace();
         }
     }

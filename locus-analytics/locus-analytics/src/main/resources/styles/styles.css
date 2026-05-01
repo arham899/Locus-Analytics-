@@ -373,6 +373,20 @@
     -fx-background-color: transparent;
 }
 
+.terminal-screen-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.terminal-screen-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.terminal-screen-scroll > .corner {
+    -fx-background-color: transparent;
+}
+
 .terminal-section-title {
     -fx-font-size: 27px;
     -fx-font-weight: 700;
@@ -669,6 +683,89 @@
     -fx-font-weight: 700;
 }
 
+.field-invalid {
+    -fx-border-color: #ef4444;
+    -fx-border-width: 1.4;
+    -fx-background-color: #2a0f13;
+}
+
+.status-error {
+    -fx-text-fill: #f87171;
+}
+
+.status-success {
+    -fx-text-fill: #34d399;
+}
+
+.status-warning {
+    -fx-text-fill: #facc15;
+}
+
+.anim-toast {
+    -fx-font-weight: 700;
+}
+
+.anim-emphasis {
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.25), 12, 0.25, 0, 1);
+}
+
+.anim-invalid {
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.45), 10, 0.25, 0, 0);
+}
+
+.anim-signal-positive {
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.4), 12, 0.3, 0, 0);
+}
+
+.anim-signal-warning {
+    -fx-effect: dropshadow(gaussian, rgba(250, 204, 21, 0.38), 12, 0.3, 0, 0);
+}
+
+.anim-signal-risk {
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.4), 12, 0.3, 0, 0);
+}
+
+.anim-shimmer {
+    -fx-background-color: rgba(148, 163, 184, 0.08);
+}
+
+.anim-scanline {
+    -fx-border-color: rgba(16, 185, 129, 0.45);
+    -fx-border-width: 1;
+}
+
+.anim-parallax-card {
+    -fx-effect: dropshadow(gaussian, rgba(2, 6, 23, 0.28), 16, 0.2, 0, 4);
+}
+
+.anim-diff-highlight {
+    -fx-border-color: rgba(16, 185, 129, 0.85);
+    -fx-border-width: 1.2;
+}
+
+.floating-toast-stack {
+    -fx-background-color: transparent;
+}
+
+.floating-toast {
+    -fx-background-color: rgba(2, 6, 23, 0.94);
+    -fx-border-color: #334155;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.form-loading-indicator {
+    -fx-progress-color: #10b981;
+}
+
+.terminal-primary-button {
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.15), 8, 0.2, 0, 1);
+}
+
 .stitch-login-right-pane {
     -fx-background-color: linear-gradient(to bottom right, #031427, #000f21);
     -fx-border-color: #1e293b;
@@ -742,4 +839,23 @@
     -fx-font-size: 12px;
     -fx-font-weight: 700;
     -fx-text-fill: #94a3b8;
+}
+
+.chart {
+    -fx-padding: 16;
+}
+
+.compare-cell-best {
+    -fx-background-color: rgba(52, 211, 153, 0.22);
+}
+
+.compare-cell-worst {
+    -fx-background-color: rgba(248, 113, 113, 0.20);
+}
+
+.banner-warning {
+    -fx-background-color: rgba(250, 204, 21, 0.18);
+    -fx-text-fill: #fde68a;
+    -fx-padding: 6 10;
+    -fx-background-radius: 8;
 }

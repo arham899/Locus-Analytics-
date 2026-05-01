@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Heatmap</title>
+    <style>
+        html, body, #map { width: 100%; height: 100%; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #notice { position: absolute; top: 8px; left: 8px; padding: 6px 8px; background: rgba(0, 0, 0, 0.65); color: #fff; border-radius: 6px; z-index: 10; }
+    </style>
+</head>
+<body>
+<div id="notice">Loading map...</div>
+<div id="map"></div>
+<script>
+    let map;
+    let heatmapLayer;
+    let markers = [];
+    let infoWindow;
+    let pendingData = [];
+    let loaded = false;
+
+    function setConfig(apiKey) {
+        if (!apiKey || apiKey.startsWith("REPLACE_")) {
+            document.getElementById("notice").textContent = "Google Maps key missing.";
+            return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(apiKey) + "&libraries=visualization&callback=initHeatmap";
+        script.async = true;
+        script.defer = true;
+        script.onerror = function () {
+            document.getElementById("notice").textContent = "Map load failed (quota/network).";
+        };
+        document.head.appendChild(script);
+    }
+
+    function initHeatmap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 24.8607, lng: 67.0011 },
+            zoom: 11,
+            streetViewControl: false
+        });
+        infoWindow = new google.maps.InfoWindow();
+        heatmapLayer = new google.maps.visualization.HeatmapLayer({
+            map: map,
+            gradient: [
+                "rgba(0,255,0,0)",
+                "rgba(0,255,0,0.7)",
+                "rgba(255,255,0,0.8)",
+                "rgba(255,0,0,0.9)"
+            ],
+            radius: 26
+        });
+        loaded = true;
+        document.getElementById("notice").textContent = "Map ready";
+        if (pendingData.length) {
+            loadHeatmap(pendingData);
+        }
+    }
+
+    function clearMarkers() {
+        markers.forEach(m => m.setMap(null));
+        markers = [];
+    }
+
+    function loadHeatmap(data) {
+        if (!loaded) {
+            pendingData = data || [];
+            return;
+        }
+        const points = data || [];
+        clearMarkers();
+        const heatData = points.map(p => ({
+            location: new google.maps.LatLng(p.latitude, p.longitude),
+            weight: p.weight
+        }));
+        heatmapLayer.setData(heatData);
+
+        points.forEach(p => {
+            const marker = new google.maps.Marker({
+                map: map,
+                position: { lat: p.latitude, lng: p.longitude },
+                title: p.locality
+            });
+            marker.addListener("mouseover", () => {
+                const html = `<div><strong>${p.locality}</strong><br/>Avg Price: ${p.avgPrice}<br/>Listings: ${p.listingCount}<br/><a href="#" onclick="searchHere('${p.locality.replace(/'/g, "\\'")}');return false;">Search properties here</a></div>`;
+                infoWindow.setContent(html);
+                infoWindow.open(map, marker);
+            });
+            marker.addListener("click", () => {
+                map.panTo(marker.getPosition());
+            });
+            markers.push(marker);
+        });
+    }
+
+    function searchHere(locality) {
+        if (window.javaHeatmapBridge && typeof window.javaHeatmapBridge.onSearchHere === "function") {
+            window.javaHeatmapBridge.onSearchHere(locality);
+        }
+    }
+</script>
+</body>
+</html>

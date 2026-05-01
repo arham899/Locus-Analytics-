@@ -25,6 +25,8 @@
             <ComboBox fx:id="cityComboBox" styleClass="stitch-input"/>
             <Label text="Intensity Metric" styleClass="terminal-label"/>
             <ComboBox fx:id="metricComboBox" styleClass="stitch-input"/>
+            <Label text="Property Type" styleClass="terminal-label"/>
+            <ComboBox fx:id="propertyTypeComboBox" styleClass="stitch-input"/>
             <Label text="Granularity: Ward Level" styleClass="terminal-muted-text"/>
             <Button text="Refresh Heatmap" styleClass="terminal-primary-button" onAction="#onLoadHeatmapData"/>
         </VBox>
@@ -62,6 +64,9 @@
     </right>
 
     <bottom>
-        <Label fx:id="statusLabel" text="Spatial dashboard ready." styleClass="terminal-status-label" BorderPane.alignment="CENTER_LEFT"/>
+        <VBox spacing="6.0">
+            <Label fx:id="quotaLabel" text="Map quota exceeded. Showing fallback table view." styleClass="banner-warning" visible="false" managed="false"/>
+            <Label fx:id="statusLabel" text="Spatial dashboard ready." styleClass="terminal-status-label" BorderPane.alignment="CENTER_LEFT"/>
+        </VBox>
     </bottom>
 </BorderPane>

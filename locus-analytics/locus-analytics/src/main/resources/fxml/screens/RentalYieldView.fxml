@@ -2,26 +2,34 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="16.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
+<VBox spacing="12.0" styleClass="terminal-screen-root" xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.locus.ui.controller.screen.RentalYieldController">
     <padding>
-        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0"/>
+        <Insets top="14.0" right="14.0" bottom="12.0" left="14.0"/>
     </padding>
 
-    <HBox>
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
         <VBox spacing="4.0">
             <Label text="Rental Yield Tracker" styleClass="terminal-screen-title"/>
             <Label text="Aggregate yield performance modeling across major asset localities." styleClass="terminal-muted-text"/>
         </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
         <HBox spacing="8.0">
             <Label text="LIVE VIEW" styleClass="terminal-chip-success"/>
         </HBox>
@@ -45,40 +53,45 @@
         </VBox>
     </GridPane>
 
-    <VBox spacing="8.0" styleClass="terminal-card">
+    <VBox spacing="10.0" styleClass="terminal-card">
         <Label text="Yield Inputs" styleClass="terminal-card-title"/>
-        <GridPane hgap="10.0" vgap="10.0">
-            <Label text="Property Value" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <TextField fx:id="propertyValueField" promptText="25000000" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-            <Label text="Monthly Rent" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-            <TextField fx:id="monthlyRentField" promptText="130000" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
-            <Label text="Annual Expenses" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <TextField fx:id="annualExpensesField" promptText="210000" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <GridPane hgap="14.0" vgap="10.0">
+            <Label text="Previous Valuation" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="previousValuationComboBox" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="City" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="cityComboBox" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+            <Label text="Locality" styleClass="terminal-label" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="localityComboBox" styleClass="stitch-input" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
+
+            <Label text="Property Value" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="propertyValueField" promptText="25000000" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="Monthly Rent" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+            <TextField fx:id="monthlyRentField" promptText="130000" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+            <Label text="Annual Expenses" styleClass="terminal-label" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
+            <TextField fx:id="annualExpensesField" promptText="210000" styleClass="stitch-input" GridPane.columnIndex="5" GridPane.rowIndex="1"/>
         </GridPane>
     </VBox>
 
-    <HBox spacing="12.0" VBox.vgrow="ALWAYS">
-        <VBox spacing="10.0" styleClass="terminal-card" HBox.hgrow="ALWAYS">
-            <Label text="Yield Distribution by Locality Band" styleClass="terminal-card-title"/>
-            <Label text="Bands A-G visualized with relative yield intensity." styleClass="terminal-muted-text"/>
-            <HBox spacing="8.0">
-                <Label text="Stress (-2%)" styleClass="terminal-chip-error"/>
-                <Label text="Base (Current)" styleClass="terminal-chip-success"/>
-                <Label text="Optimistic (+2%)" styleClass="terminal-chip"/>
-            </HBox>
-            <HBox spacing="8.0">
-                <Label text="High Yield Target" styleClass="terminal-chip-success"/>
-                <Label text="Stable Income" styleClass="terminal-chip"/>
-                <Label text="Watchlist" styleClass="terminal-chip-warning"/>
-            </HBox>
+    <HBox spacing="10.0" VBox.vgrow="ALWAYS">
+        <VBox spacing="10.0" styleClass="terminal-card" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <Label text="Yield Comparison" styleClass="terminal-card-title"/>
+            <BarChart fx:id="yieldBarChart" title="Property vs City Average" legendVisible="false" animated="false" VBox.vgrow="ALWAYS" minHeight="220.0" prefHeight="240.0">
+                <xAxis>
+                    <CategoryAxis label="Category"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Yield %"/>
+                </yAxis>
+            </BarChart>
+            <Label fx:id="fallbackLabel" text="Using city-average fallback because locality-level data is unavailable." styleClass="terminal-chip-warning" visible="false" managed="false"/>
         </VBox>
-        <VBox spacing="10.0" styleClass="terminal-card" prefWidth="320.0">
+        <VBox spacing="10.0" styleClass="terminal-card" prefWidth="290.0" minWidth="270.0" maxWidth="320.0" VBox.vgrow="ALWAYS">
             <Label text="Locality Ranking" styleClass="terminal-card-title"/>
-            <TableView minHeight="250.0" VBox.vgrow="ALWAYS">
+            <TableView minHeight="220.0" prefHeight="240.0" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn text="Locality" prefWidth="150.0"/>
-                    <TableColumn text="Yield" prefWidth="80.0"/>
-                    <TableColumn text="Trend" prefWidth="80.0"/>
+                    <TableColumn text="Locality"/>
+                    <TableColumn text="Yield"/>
+                    <TableColumn text="Trend"/>
                 </columns>
             </TableView>
             <Button text="View Full Report" styleClass="terminal-outline-button"/>
@@ -86,8 +99,9 @@
     </HBox>
 
     <HBox spacing="8.0">
-        <Button text="Recalculate" styleClass="terminal-primary-button" onAction="#onCalculateRentalYield"/>
+        <Button fx:id="recalculateButton" text="Recalculate" styleClass="terminal-primary-button" onAction="#onCalculateRentalYield"/>
         <Button text="Reset" styleClass="terminal-secondary-button" onAction="#onReset"/>
+        <ProgressIndicator fx:id="loadingIndicator" maxWidth="22.0" maxHeight="22.0" visible="false" managed="false" styleClass="form-loading-indicator"/>
     </HBox>
     <Label fx:id="statusLabel" text="Yield dashboard ready." styleClass="terminal-status-label"/>
 </VBox>

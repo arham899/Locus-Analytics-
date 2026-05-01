@@ -3,6 +3,7 @@ package com.locus.ui;
 import com.locus.model.User;
 import com.locus.ui.controller.LoginController;
 import com.locus.ui.controller.MainController;
+import com.locus.ui.controller.screen.UiAnimationHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,8 +36,7 @@ public class SceneManager {
             stage.setTitle("LOCUS Analytics - Login");
             Scene scene = new Scene(root, 1180, 720);
             scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
-            stage.setScene(scene);
-            stage.show();
+            UiAnimationHelper.playSceneCrossfade(stage, scene);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to load LoginView.fxml", e);
         }
@@ -56,8 +56,7 @@ public class SceneManager {
             stage.setTitle("LOCUS Analytics");
             Scene scene = new Scene(root, 1260, 800);
             scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
-            stage.setScene(scene);
-            stage.show();
+            UiAnimationHelper.playSceneCrossfade(stage, scene, true);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to load MainView.fxml", e);
         }

@@ -29,9 +29,9 @@
         <HBox spacing="8.0" styleClass="terminal-card">
             <TextField fx:id="cityFilterField" promptText="City filter (e.g., Karachi)" HBox.hgrow="ALWAYS" styleClass="stitch-input"/>
             <Button text="Load" styleClass="terminal-primary-button" onAction="#onLoadListings"/>
-            <Button text="Approve" styleClass="terminal-outline-button" onAction="#onEditListing"/>
-            <Button text="Reject" styleClass="terminal-secondary-button" onAction="#onDeleteListing"/>
-            <Button text="Flag" styleClass="terminal-outline-button" onAction="#onAddListing"/>
+            <Button fx:id="addListingButton" text="Add Listing" styleClass="terminal-outline-button" onAction="#onAddListing"/>
+            <Button fx:id="editListingButton" text="Edit" styleClass="terminal-secondary-button" onAction="#onEditListing" disable="true"/>
+            <Button fx:id="deleteListingButton" text="Delete" styleClass="terminal-outline-button" onAction="#onDeleteListing" disable="true"/>
             <Button text="Refresh" styleClass="terminal-outline-button" onAction="#onLoadListings"/>
         </HBox>
 

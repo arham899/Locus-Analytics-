@@ -5,6 +5,7 @@ import com.locus.model.User;
 import com.locus.ui.BrandAssets;
 import com.locus.ui.SceneManager;
 import com.locus.ui.ServiceRegistry;
+import com.locus.ui.controller.screen.UiAnimationHelper;
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -61,6 +62,9 @@ public class LoginController implements Initializable {
             brandLogoView.setVisible(false);
             brandLogoView.setManaged(false);
         }
+        emailField.textProperty().addListener((obs, oldV, newV) -> clearFieldFeedback());
+        passwordField.textProperty().addListener((obs, oldV, newV) -> clearFieldFeedback());
+        UiAnimationHelper.attachHoverScale(loginButton);
     }
 
     @FXML
@@ -70,6 +74,8 @@ public class LoginController implements Initializable {
 
         if (email.isBlank() || password.isBlank()) {
             feedbackLabel.setText("Email and password are required.");
+            markInvalid(email.isBlank() ? emailField : passwordField);
+            UiAnimationHelper.showToast(feedbackLabel, feedbackLabel.getText(), "status-error");
             return;
         }
 
@@ -80,12 +86,17 @@ public class LoginController implements Initializable {
             sceneManager.showMain(user);
         } catch (ValidationException ex) {
             feedbackLabel.setText(buildValidationMessage(ex));
+            markInvalid(passwordField);
+            UiAnimationHelper.showToast(feedbackLabel, feedbackLabel.getText(), "status-error");
         } catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Login Error");
             alert.setHeaderText("Unable to login");
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
+            feedbackLabel.setText("Invalid credentials or service issue. Please try again.");
+            markInvalid(passwordField);
+            UiAnimationHelper.showToast(feedbackLabel, feedbackLabel.getText(), "status-error");
         } finally {
             setLoadingState(false);
         }
@@ -106,6 +117,7 @@ public class LoginController implements Initializable {
     @FXML
     private void onForgotPassword() {
         feedbackLabel.setText("Password reset is not available in stub mode.");
+        UiAnimationHelper.showToast(feedbackLabel, feedbackLabel.getText(), "status-warning");
     }
 
     private String buildValidationMessage(ValidationException ex) {
@@ -127,5 +139,17 @@ public class LoginController implements Initializable {
     private void setLoadingState(boolean loading) {
         loginButton.setDisable(loading);
         loginButton.setText(loading ? "Signing in..." : "Sign In  →");
+    }
+
+    private void markInvalid(javafx.scene.control.Control control) {
+        if (control != null && !control.getStyleClass().contains("field-invalid")) {
+            control.getStyleClass().add("field-invalid");
+        }
+        UiAnimationHelper.shakeInvalid(control);
+    }
+
+    private void clearFieldFeedback() {
+        emailField.getStyleClass().remove("field-invalid");
+        passwordField.getStyleClass().remove("field-invalid");
     }
 }
