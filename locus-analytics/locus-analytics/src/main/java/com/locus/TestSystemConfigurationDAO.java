@@ -40,7 +40,6 @@ public class TestSystemConfigurationDAO {
             cfg.setDbHost("127.0.0.1:5432");
             cfg.setZameenScrapeInterval("12h");
             cfg.setModelFilePath("/models/v2.pkl");
-            cfg.setUpdatedAt(LocalDateTime.now());
 
             boolean updated = dao.update(cfg);
 

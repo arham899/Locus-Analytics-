@@ -46,15 +46,14 @@ public class SystemConfigurationDAOImpl implements SystemConfigurationDAO {
     public boolean update(SystemConfiguration c) {
 
         String sql = """
-            UPDATE system_configuration
-            SET admin_id = ?,
-                db_host = ?,
-                google_maps_api_key = ?,
-                zameen_scrape_interval = ?,
-                model_file_path = ?,
-                updated_at = CURRENT_TIMESTAMP
-            WHERE config_id = ?
-        """;
+        UPDATE system_configuration
+        SET admin_id = ?,
+            db_host = ?,
+            google_maps_api_key = ?,
+            zameen_scrape_interval = ?,
+            model_file_path = ?
+        WHERE config_id = ?
+    """;
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

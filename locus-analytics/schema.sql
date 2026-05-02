@@ -202,6 +202,48 @@ CREATE TABLE system_configuration (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 10. Audit Log Table
+CREATE TABLE audit_log (
+                           audit_id SERIAL PRIMARY KEY,
+                           table_name VARCHAR NOT NULL,
+                           record_id VARCHAR NOT NULL,
+                           action VARCHAR NOT NULL,
+                           changed_by VARCHAR,
+                           old_data JSONB,
+                           new_data JSONB,
+                           changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION log_config_changes()
+RETURNS TRIGGER AS $$
+BEGIN
+INSERT INTO audit_log (
+    table_name,
+    record_id,
+    action,
+    changed_by,
+    old_data,
+    new_data
+)
+VALUES (
+           TG_TABLE_NAME,
+           NEW.config_id,
+           TG_OP,
+           NEW.admin_id,
+           row_to_json(OLD)::jsonb,
+           row_to_json(NEW)::jsonb
+       );
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_audit_config
+    AFTER UPDATE ON system_configuration
+    FOR EACH ROW
+    WHEN (OLD.* IS DISTINCT FROM NEW.*)
+EXECUTE FUNCTION log_config_changes();
+
 CREATE TRIGGER trg_user BEFORE UPDATE ON app_user
 FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 

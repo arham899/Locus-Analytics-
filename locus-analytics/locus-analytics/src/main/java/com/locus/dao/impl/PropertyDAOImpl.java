@@ -5,9 +5,11 @@ import com.locus.dao.PropertyDAO;
 import com.locus.dao.DataAccessException;
 import com.locus.model.Property;
 import com.locus.model.dto.SearchFilter;
+import com.locus.model.dto.LocalityMetric;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,8 +58,9 @@ public class PropertyDAOImpl implements PropertyDAO {
             // =========================
             // 1. BUILD FILTERS (shared)
             // =========================
-            StringBuilder whereSql = new StringBuilder(" WHERE 1=1");
-            List<Object> filterParams = new ArrayList<>();
+            QueryParts qp = buildWhereClause(filter);
+            StringBuilder whereSql = new StringBuilder(qp.whereSql);
+            List<Object> filterParams = qp.params;
 
             if (filter.getCity() != null) {
                 whereSql.append(" AND city = ?");
@@ -97,21 +100,21 @@ public class PropertyDAOImpl implements PropertyDAO {
             // =========================
             // 2. COUNT QUERY
             // =========================
-            String countSql = "SELECT COUNT(*) FROM property" + whereSql;
-
-            int totalCount = 0;
-
-            try (PreparedStatement countStmt = conn.prepareStatement(countSql)) {
-
-                for (int i = 0; i < filterParams.size(); i++) {
-                    countStmt.setObject(i + 1, filterParams.get(i));
-                }
-
-                ResultSet rs = countStmt.executeQuery();
-                if (rs.next()) {
-                    totalCount = rs.getInt(1);
-                }
-            }
+//            String countSql = "SELECT COUNT(*) FROM property" + whereSql;
+//
+//            int totalCount = 0;
+//
+//            try (PreparedStatement countStmt = conn.prepareStatement(countSql)) {
+//
+//                for (int i = 0; i < filterParams.size(); i++) {
+//                    countStmt.setObject(i + 1, filterParams.get(i));
+//                }
+//
+//                ResultSet rs = countStmt.executeQuery();
+//                if (rs.next()) {
+//                    totalCount = rs.getInt(1);
+//                }
+//            }
 
             // =========================
             // 3. DATA QUERY
@@ -177,6 +180,7 @@ public class PropertyDAOImpl implements PropertyDAO {
         """;
 
         try (Connection conn = dataSource.getConnection();
+
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, property.getPropertyId());
@@ -452,4 +456,196 @@ public class PropertyDAOImpl implements PropertyDAO {
 
         return p;
     }
+
+    @Override
+    public List<LocalityMetric> getLocalityMetrics(String city, int periodYears, int minListingCount) {
+
+        List<LocalityMetric> results = new ArrayList<>();
+
+        LocalDate now = LocalDate.now();
+        LocalDate pastStart = now.minusYears(periodYears);
+        LocalDate midPoint = now.minusYears(periodYears / 2);
+        String sql = """
+WITH base AS (
+    SELECT
+        locality,
+        price,
+        listing_date,
+        CASE
+            WHEN listing_date >= CURRENT_DATE - (? * INTERVAL '1 year') / 2::int
+                THEN 'recent'
+            ELSE 'past'
+        END AS period
+    FROM property
+    WHERE city = ?
+      AND listing_date >= CURRENT_DATE - (? * INTERVAL '1 year')
+),
+agg AS (
+    SELECT
+        locality,
+        period,
+        AVG(price) AS avg_price,
+        COUNT(*) AS cnt
+    FROM base
+    GROUP BY locality, period
+)
+SELECT
+    locality,
+    MAX(CASE WHEN period = 'past' THEN avg_price END) AS past_price,
+    MAX(CASE WHEN period = 'recent' THEN avg_price END) AS recent_price,
+    MAX(CASE WHEN period = 'past' THEN cnt END) AS past_count,
+    MAX(CASE WHEN period = 'recent' THEN cnt END) AS recent_count
+FROM agg
+GROUP BY locality
+HAVING
+    COALESCE(MAX(CASE WHEN period = 'recent' THEN cnt END), 0) >= ?
+""";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // ⚠️ IMPORTANT: PostgreSQL doesn't allow ? inside INTERVAL directly
+            // So we pass numeric and build interval using multiplication
+
+//            stmt.setString(1, city);
+//
+//// past
+//            stmt.setDate(2, Date.valueOf(pastStart));
+//            stmt.setDate(3, Date.valueOf(midPoint));
+//
+//// recent
+//            stmt.setString(4, city);
+//            stmt.setDate(5, Date.valueOf(midPoint));
+//
+//            stmt.setInt(6, minListingCount);
+
+            stmt.setInt(1, periodYears);
+            stmt.setString(2, city);
+            stmt.setInt(3, periodYears);
+            stmt.setInt(4, minListingCount);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                LocalityMetric m = new LocalityMetric();
+
+                double pastPrice = rs.getDouble("past_price");
+                double recentPrice = rs.getDouble("recent_price");
+
+                long pastCount = rs.getLong("past_count");
+                long recentCount = rs.getLong("recent_count");
+
+                m.setLocality(rs.getString("locality"));
+                m.setAvgPricePast(pastPrice);
+                m.setAvgPriceRecent(recentPrice);
+                m.setPastCount(pastCount);
+                m.setRecentCount(recentCount);
+
+                // compute in Java (cleaner + safer)
+                double priceAppreciation =
+                        (pastPrice == 0)
+                                ? 0.0
+                                : ((recentPrice - pastPrice) / pastPrice) * 100;
+                double volumeGrowth;
+
+                if (pastCount == 0) {
+                    volumeGrowth = (recentCount == 0) ? 0.0 : 100.0;
+                } else {
+                    volumeGrowth = ((double)(recentCount - pastCount) / pastCount) * 100;
+                }
+
+                m.setPriceAppreciation(priceAppreciation);
+                m.setVolumeGrowth(volumeGrowth);
+
+                results.add(m);
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("getLocalityMetrics failed: " + e.getMessage(), e);
+        }
+
+        return results;
+    }
+
+    private static class QueryParts {
+        String whereSql;
+        List<Object> params;
+    }
+
+    private QueryParts buildWhereClause(SearchFilter filter) {
+
+        StringBuilder whereSql = new StringBuilder(" WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (filter.getCity() != null) {
+            whereSql.append(" AND city = ?");
+            params.add(filter.getCity());
+        }
+
+        if (filter.getMinPrice() != null) {
+            whereSql.append(" AND price >= ?");
+            params.add(filter.getMinPrice());
+        }
+
+        if (filter.getMaxPrice() != null) {
+            whereSql.append(" AND price <= ?");
+            params.add(filter.getMaxPrice());
+        }
+
+        if (filter.getLocality() != null) {
+            whereSql.append(" AND locality = ?");
+            params.add(filter.getLocality());
+        }
+
+        if (filter.getPropertyType() != null) {
+            whereSql.append(" AND property_type = ?");
+            params.add(filter.getPropertyType());
+        }
+
+        if (filter.getBedrooms() != null) {
+            whereSql.append(" AND bedrooms = ?");
+            params.add(filter.getBedrooms());
+        }
+
+        if (filter.getBathrooms() != null) {
+            whereSql.append(" AND bathrooms = ?");
+            params.add(filter.getBathrooms());
+        }
+
+        QueryParts qp = new QueryParts();
+        qp.whereSql = whereSql.toString();
+        qp.params = params;
+
+        return qp;
+    }
+
+    @Override
+    public int countByFilter(SearchFilter filter) {
+
+        try (Connection conn = dataSource.getConnection()) {
+
+            QueryParts qp = buildWhereClause(filter);
+
+            String sql = "SELECT COUNT(*) FROM property" + qp.whereSql;
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                for (int i = 0; i < qp.params.size(); i++) {
+                    stmt.setObject(i + 1, qp.params.get(i));
+                }
+
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("countByFilter failed: " + e.getMessage(), e);
+        }
+
+        return 0;
+    }
+
 }

@@ -3,6 +3,7 @@ package com.locus.dao;
 import com.locus.model.Property;
 import com.locus.model.dto.SearchFilter;
 import com.locus.model.dto.TrendPoint;
+import com.locus.model.dto.LocalityMetric;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +29,15 @@ public interface PropertyDAO {
      * @throws DataAccessException if query execution fails
      */
     List<Property> search(SearchFilter filter);
+
+    /**
+     * Returns total number of records matching the given filters.
+     * Used for accurate pagination in UC-4 Search.
+     *
+     * @param filter search criteria
+     * @return total matching rows in database
+     */
+    int countByFilter(SearchFilter filter);
 
     /**
      * Find comparable properties for valuation model.
@@ -92,4 +102,7 @@ public interface PropertyDAO {
             LocalDate startDate,
             LocalDate endDate
     );
+
+    List<LocalityMetric> getLocalityMetrics(String city, int periodYears, int minListingCount);
+
 }
