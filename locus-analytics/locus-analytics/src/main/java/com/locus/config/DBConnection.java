@@ -53,9 +53,20 @@ public class DBConnection {
             pgConfig.setJdbcUrl(props.getProperty("pg.db.url"));
             pgConfig.setUsername(props.getProperty("pg.db.username"));
             pgConfig.setPassword(props.getProperty("pg.db.password"));
-            pgConfig.setMaximumPoolSize(10);
+            pgConfig.setMaximumPoolSize(
+                    Integer.parseInt(props.getProperty("db.pool.maximumPoolSize"))
+            );
+
+            pgConfig.setConnectionTimeout(
+                    Long.parseLong(props.getProperty("db.pool.connectionTimeout"))
+            );
+
+            pgConfig.setIdleTimeout(
+                    Long.parseLong(props.getProperty("db.pool.idleTimeout"))
+            );
+
+// keep this if you want (optional)
             pgConfig.setMinimumIdle(2);
-            pgConfig.setConnectionTimeout(10000); // 10s timeout
 
             pgDataSource = new HikariDataSource(pgConfig);
             System.out.println("[DBConnection] PostgreSQL Pool initialized successfully.");
@@ -70,9 +81,20 @@ public class DBConnection {
             oracleConfig.setJdbcUrl(props.getProperty("oracle.db.url"));
             oracleConfig.setUsername(props.getProperty("oracle.db.username"));
             oracleConfig.setPassword(props.getProperty("oracle.db.password"));
-            oracleConfig.setMaximumPoolSize(10);
+            oracleConfig.setMaximumPoolSize(
+                    Integer.parseInt(props.getProperty("db.pool.maximumPoolSize"))
+            );
+
+            oracleConfig.setConnectionTimeout(
+                    Long.parseLong(props.getProperty("db.pool.connectionTimeout"))
+            );
+
+            oracleConfig.setIdleTimeout(
+                    Long.parseLong(props.getProperty("db.pool.idleTimeout"))
+            );
+
+// keep this
             oracleConfig.setMinimumIdle(2);
-            oracleConfig.setConnectionTimeout(10000); // 10s timeout
 
             oracleDataSource = new HikariDataSource(oracleConfig);
             System.out.println("[DBConnection] Oracle Pool initialized successfully.");

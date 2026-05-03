@@ -22,6 +22,7 @@ def get_headers():
 
 def fetch_listings(pages=1):
     listings = []
+    current_delay = 2.0
 
     for page in range(1, pages + 1):
         url = f"{BASE_URL}?page={page}"
@@ -29,9 +30,17 @@ def fetch_listings(pages=1):
         try:
             response = requests.get(url, headers=get_headers(), timeout=10)
 
+            if response.status_code == 429:
+                print("[WARN] Rate limited! Sleeping...")
+                time.sleep(10)
+                current_delay += 1.0
+                continue
+
             if response.status_code != 200:
                 print(f"[WARN] Failed page {page}: {response.status_code}")
                 continue
+
+            time.sleep(current_delay)
 
             soup = BeautifulSoup(response.text, "html.parser")
 
@@ -75,7 +84,8 @@ def fetch_listings(pages=1):
                         listings.append({
                             "title": title,
                             "price": price,
-                            "type": property_type
+                            "type": property_type,
+                            "url": card.find("a")["href"] if card.find("a") else None  # ✅ ADD THIS
                         })
 
                 except Exception as e:
