@@ -40,13 +40,8 @@ public class ETLServiceImpl implements ETLService {
 
     private void runPythonScript(ETLJob job) {
         try {
-            // Update to Loading stage
-            job.setCurrentStage("Loading");
-            job.setProgressPercent(50);
-            etlJobDAO.insert(job); // Update status (assuming insert does upsert or we just track latest)
-            
-            // Note: This relies on python being in PATH and the script being at etl/run_etl.py
-            ProcessBuilder pb = new ProcessBuilder("python", "etl/run_etl.py");
+            // Note: This relies on python being in PATH and the script being at etl_pipeline/etl_main.py
+            ProcessBuilder pb = new ProcessBuilder("python", "etl_pipeline/etl_main.py");
             pb.directory(new File(".")); 
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -55,31 +50,38 @@ public class ETLServiceImpl implements ETLService {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println("[ETL-SCRIPT] " + line);
+                
+                // Polling the database to get real progress updates from the Python script
+                ETLJob currentStatus = etlJobDAO.findLatest(); // Simplified: assume only one run at a time
+                if (currentStatus != null) {
+                    job.setStatus(currentStatus.getStatus());
+                    job.setCurrentStage(currentStatus.getCurrentStage());
+                    job.setProgressPercent(currentStatus.getProgressPercent());
+                    job.setRecordsExtracted(currentStatus.getRecordsExtracted());
+                    job.setRecordsLoaded(currentStatus.getRecordsLoaded());
+                }
             }
             
             int exitCode = process.waitFor();
             
-            if (exitCode == 0) {
+            ETLJob finalSummary = etlJobDAO.findLatest();
+            if (exitCode == 0 && finalSummary != null) {
                 job.setStatus("success");
                 job.setCurrentStage("Finished");
                 job.setProgressPercent(100);
-                // In a real scenario, we'd parse the output to get actual record counts.
-                job.setRecordsExtracted(10);
-                job.setRecordsCleaned(10);
-                job.setRecordsLoaded(10);
-                job.setErrors(0);
+                job.setRecordsExtracted(finalSummary.getRecordsExtracted());
+                job.setRecordsCleaned(finalSummary.getRecordsCleaned());
+                job.setRecordsLoaded(finalSummary.getRecordsLoaded());
+                job.setErrors(finalSummary.getErrors());
             } else {
                 job.setStatus("failed");
                 job.setErrors(1);
             }
             
-            etlJobDAO.insert(job); // Save final status
-            
         } catch (Exception e) {
             e.printStackTrace();
             job.setStatus("failed");
             job.setErrors(1);
-            etlJobDAO.insert(job);
         }
     }
 

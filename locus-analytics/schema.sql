@@ -4,6 +4,7 @@
 
 DROP FUNCTION IF EXISTS update_timestamp CASCADE;
 
+DROP TABLE IF EXISTS audit_log CASCADE;
 DROP TABLE IF EXISTS valuation_report CASCADE;
 DROP TABLE IF EXISTS roi_analysis CASCADE;
 DROP TABLE IF EXISTS rental_analysis CASCADE;
@@ -28,6 +29,7 @@ CREATE TABLE app_user (
 
     name VARCHAR NOT NULL,
     email VARCHAR UNIQUE NOT NULL,
+    password_hash VARCHAR NOT NULL,
 
     role VARCHAR NOT NULL CHECK (role IN ('admin', 'analyst')),
     certification_level VARCHAR,
@@ -120,6 +122,7 @@ CREATE TABLE roi_analysis (
 
     purchase_price NUMERIC CHECK (purchase_price > 0),
     purchase_date DATE,
+    current_value NUMERIC CHECK (current_value > 0),
 
     cumulative_rental_income NUMERIC DEFAULT 0,
     total_expenses NUMERIC DEFAULT 0,
@@ -162,6 +165,7 @@ CREATE TABLE investment_cluster (
     investment_score NUMERIC,
     price_appreciation NUMERIC,
     listing_volume_growth NUMERIC,
+    rental_trend NUMERIC,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -182,6 +186,8 @@ CREATE TABLE etl_job (
     errors INT DEFAULT 0,
 
     status VARCHAR CHECK (status IN ('success', 'failed', 'running')),
+    current_stage VARCHAR DEFAULT 'idle',
+    progress_percent INT DEFAULT 0 CHECK (progress_percent >= 0 AND progress_percent <= 100),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -203,38 +209,37 @@ CREATE TABLE system_configuration (
 );
 
 -- 10. Audit Log Table
+-- audit_id is a VARCHAR (Java generates short UUID strings, not SERIAL integers)
 CREATE TABLE audit_log (
-                           audit_id SERIAL PRIMARY KEY,
-                           table_name VARCHAR NOT NULL,
-                           record_id VARCHAR NOT NULL,
-                           action VARCHAR NOT NULL,
-                           changed_by VARCHAR,
-                           old_data JSONB,
-                           new_data JSONB,
-                           changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    audit_id  VARCHAR PRIMARY KEY,
+    admin_id  VARCHAR REFERENCES app_user(user_id) ON DELETE SET NULL,
+    table_name VARCHAR NOT NULL,
+    field_name VARCHAR,
+    old_value  TEXT,
+    new_value  TEXT,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE OR REPLACE FUNCTION log_config_changes()
 RETURNS TRIGGER AS $$
 BEGIN
-INSERT INTO audit_log (
-    table_name,
-    record_id,
-    action,
-    changed_by,
-    old_data,
-    new_data
-)
-VALUES (
-           TG_TABLE_NAME,
-           NEW.config_id,
-           TG_OP,
-           NEW.admin_id,
-           row_to_json(OLD)::jsonb,
-           row_to_json(NEW)::jsonb
-       );
-
-RETURN NEW;
+    INSERT INTO audit_log (
+        audit_id,
+        admin_id,
+        table_name,
+        field_name,
+        old_value,
+        new_value
+    )
+    VALUES (
+        gen_random_uuid()::text,
+        NEW.admin_id,
+        TG_TABLE_NAME,
+        TG_OP,
+        row_to_json(OLD)::text,
+        row_to_json(NEW)::text
+    );
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 

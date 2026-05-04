@@ -49,8 +49,9 @@ public class ValuationServiceImpl implements ValuationService {
 
         // ── Check locality support ──────────────────
         if (!predictor.isLocalitySupported(property.getLocality())) {
-            System.out.println("[ValuationService] Warning: locality '" +
-                    property.getLocality() + "' not in training data. Using default encoding.");
+            throw new com.locus.exception.ValidationException(
+                    "Locality '" + property.getLocality() + "' is not supported for valuation."
+            );
         }
 
         // ── ML Prediction ───────────────────────────
@@ -59,7 +60,8 @@ public class ValuationServiceImpl implements ValuationService {
         // ── Confidence Interval ─────────────────────
         double[] ci = predictor.getConfidenceInterval(fmv);
 
-        // ── Key Factors ─────────────────────────────
+        // ── Data Density ────────────────────────────
+        int density = findComparables(property).size();
         List<String> keyFactors = predictor.getKeyFactors(property);
 
         // ── Build Valuation ─────────────────────────
@@ -69,6 +71,7 @@ public class ValuationServiceImpl implements ValuationService {
         valuation.setConfidenceIntervalLow(Math.round(ci[0]));
         valuation.setConfidenceIntervalHigh(Math.round(ci[1]));
         valuation.setKeyFactors(keyFactors);
+        valuation.setDataDensity(density);
 
         // ── Persist ─────────────────────────────────
         try {
@@ -85,6 +88,9 @@ public class ValuationServiceImpl implements ValuationService {
 
         new InputValidator()
                 .validateNotNull("property", property)
+                .throwIfInvalid();
+
+        new InputValidator()
                 .validateNotBlank("city", property.getCity())
                 .validateNotBlank("locality", property.getLocality())
                 .validatePositive("area", property.getArea())

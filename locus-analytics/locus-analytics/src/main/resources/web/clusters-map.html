@@ -16,6 +16,15 @@
     const markers = new Map();
     let infoWindow;
 
+    function setConfig(apiKey) {
+        if (!apiKey) return;
+        const script = document.createElement("script");
+        script.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(apiKey) + "&callback=init";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+
     function init() {
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 24.8607, lng: 67.0011 },
@@ -25,16 +34,7 @@
     }
 
     function ensureMap() {
-        if (map) return;
-        if (!window.google || !google.maps) {
-            const script = document.createElement("script");
-            script.src = "https://maps.googleapis.com/maps/api/js?key=&callback=init";
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-        } else {
-            init();
-        }
+        // Handled by setConfig callback
     }
 
     function colorForScore(score) {
@@ -44,27 +44,41 @@
     }
 
     function loadClusters(clusters) {
-        ensureMap();
-        setTimeout(() => {
-            markers.forEach(marker => marker.setMap(null));
-            markers.clear();
-            clusters.forEach(cluster => {
-                const marker = new google.maps.Marker({
-                    map: map,
-                    position: { lat: cluster.lat, lng: cluster.lng },
-                    title: cluster.locality,
-                    icon: "http://maps.google.com/mapfiles/ms/icons/" + colorForScore(cluster.score) + "-dot.png"
-                });
-                marker.addListener("click", () => {
-                    infoWindow.setContent(`<strong>${cluster.locality}</strong><br/>Score: ${cluster.score}`);
-                    infoWindow.open(map, marker);
-                    if (window.javaClusterBridge && window.javaClusterBridge.onClusterMarkerClick) {
-                        window.javaClusterBridge.onClusterMarkerClick(cluster.locality);
-                    }
-                });
-                markers.set(cluster.locality, marker);
+        if (!map) {
+            // If map not ready, retry in 500ms
+            setTimeout(() => loadClusters(clusters), 500);
+            return;
+        }
+        markers.forEach(marker => marker.setMap(null));
+        markers.clear();
+        
+        if (clusters.length === 0) return;
+        
+        const bounds = new google.maps.LatLngBounds();
+        clusters.forEach(cluster => {
+            const loc = new google.maps.LatLng(cluster.lat, cluster.lng);
+            bounds.extend(loc);
+            
+            const marker = new google.maps.Marker({
+                map: map,
+                position: loc,
+                title: cluster.locality,
+                icon: "http://maps.google.com/mapfiles/ms/icons/" + colorForScore(cluster.score) + "-dot.png"
             });
-        }, 250);
+            marker.addListener("click", () => {
+                infoWindow.setContent(`<strong>${cluster.locality}</strong><br/>Score: ${cluster.score}`);
+                infoWindow.open(map, marker);
+                if (window.javaClusterBridge && window.javaClusterBridge.onClusterMarkerClick) {
+                    window.javaClusterBridge.onClusterMarkerClick(cluster.locality);
+                }
+            });
+            markers.set(cluster.locality, marker);
+        });
+        
+        google.maps.event.addListenerOnce(map, 'bounds_changed', function() {
+            if (this.getZoom() > 14) this.setZoom(14);
+        });
+        map.fitBounds(bounds);
     }
 
     function highlightCluster(locality) {

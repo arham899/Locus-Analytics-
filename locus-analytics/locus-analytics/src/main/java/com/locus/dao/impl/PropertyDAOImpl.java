@@ -56,46 +56,11 @@ public class PropertyDAOImpl implements PropertyDAO {
         try (Connection conn = dataSource.getConnection()) {
 
             // =========================
-            // 1. BUILD FILTERS (shared)
+            // 1. BUILD FILTERS (using shared utility)
             // =========================
             QueryParts qp = buildWhereClause(filter);
             StringBuilder whereSql = new StringBuilder(qp.whereSql);
             List<Object> filterParams = qp.params;
-
-            if (filter.getCity() != null) {
-                whereSql.append(" AND city = ?");
-                filterParams.add(filter.getCity());
-            }
-
-            if (filter.getMinPrice() != null) {
-                whereSql.append(" AND price >= ?");
-                filterParams.add(filter.getMinPrice());
-            }
-
-            if (filter.getMaxPrice() != null) {
-                whereSql.append(" AND price <= ?");
-                filterParams.add(filter.getMaxPrice());
-            }
-
-            if (filter.getLocality() != null) {
-                whereSql.append(" AND locality = ?");
-                filterParams.add(filter.getLocality());
-            }
-
-            if (filter.getPropertyType() != null) {
-                whereSql.append(" AND property_type = ?");
-                filterParams.add(filter.getPropertyType());
-            }
-
-            if (filter.getBedrooms() != null) {
-                whereSql.append(" AND bedrooms = ?");
-                filterParams.add(filter.getBedrooms());
-            }
-
-            if (filter.getBathrooms() != null) {
-                whereSql.append(" AND bathrooms = ?");
-                filterParams.add(filter.getBathrooms());
-            }
 
             // =========================
             // 2. COUNT QUERY
@@ -565,6 +530,76 @@ HAVING
         }
 
         return results;
+    }
+
+    @Override
+    public List<String> findDistinctCities() {
+        List<String> cities = new ArrayList<>();
+        String sql = "SELECT DISTINCT city FROM property WHERE city IS NOT NULL AND city <> '' ORDER BY city";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                cities.add(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("findDistinctCities failed: " + e.getMessage(), e);
+        }
+        return cities;
+    }
+
+    @Override
+    public List<String> findDistinctLocalities(String city) {
+        java.util.LinkedHashSet<String> localities = new java.util.LinkedHashSet<>();
+        boolean filterCity = city != null && !city.isBlank();
+        String baseFilter = " locality IS NOT NULL AND locality <> '' "
+                + " AND LENGTH(locality) <= 60 "
+                + " AND locality NOT LIKE '%\"%' "
+                + " AND LOWER(locality) NOT LIKE '%bedroom%' "
+                + " AND LOWER(locality) NOT LIKE '%marla%' "
+                + " AND LOWER(locality) NOT LIKE '%kanal%' "
+                + " AND LOWER(locality) NOT LIKE '%for sale%' "
+                + " AND LOWER(locality) NOT LIKE '%for rent%' "
+                + " AND LOWER(locality) NOT LIKE '%house %' "
+                + " AND LOWER(locality) NOT LIKE '%apartment %' ";
+        String sql = filterCity
+                ? "SELECT DISTINCT locality FROM property WHERE city = ? AND" + baseFilter + "ORDER BY locality"
+                : "SELECT DISTINCT locality FROM property WHERE" + baseFilter + "ORDER BY locality";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            if (filterCity) {
+                stmt.setString(1, city);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String cleaned = cleanLocality(rs.getString(1));
+                    if (cleaned != null && !cleaned.isBlank()) {
+                        localities.add(cleaned);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("findDistinctLocalities failed: " + e.getMessage(), e);
+        }
+        return new ArrayList<>(localities);
+    }
+
+    private String cleanLocality(String raw) {
+        if (raw == null) return null;
+        String value = raw.trim().replaceAll("^[\"']+|[\"']+$", "").trim();
+        if (value.isEmpty()) return null;
+        // If a value contains a comma, the locality is usually the first segment (e.g., "DHA Phase 6, Karachi").
+        int commaIdx = value.indexOf(',');
+        if (commaIdx > 0) {
+            value = value.substring(0, commaIdx).trim();
+        }
+        if (value.length() > 60) return null;
+        String lower = value.toLowerCase();
+        if (lower.contains("bedroom") || lower.contains("marla") || lower.contains("kanal")
+                || lower.contains("for sale") || lower.contains("for rent")) {
+            return null;
+        }
+        return value;
     }
 
     private static class QueryParts {

@@ -22,9 +22,11 @@ import java.util.stream.Collectors;
 public class HeatmapServiceImpl implements HeatmapService {
 
     private final PropertyDAO propertyDAO;
+    private final com.locus.dao.RentalAnalysisDAO rentalAnalysisDAO;
 
-    public HeatmapServiceImpl(PropertyDAO propertyDAO) {
+    public HeatmapServiceImpl(PropertyDAO propertyDAO, com.locus.dao.RentalAnalysisDAO rentalAnalysisDAO) {
         this.propertyDAO = propertyDAO;
+        this.rentalAnalysisDAO = rentalAnalysisDAO;
     }
 
     @Override
@@ -63,7 +65,7 @@ public class HeatmapServiceImpl implements HeatmapService {
             String locality = entry.getKey();
             List<Property> localityProps = entry.getValue();
 
-            double metricValue = computeMetric(localityProps, metric);
+            double metricValue = computeMetric(city, locality, localityProps, metric);
             localityMetrics.put(locality, metricValue);
 
             // Average lat/lng for the locality
@@ -98,7 +100,7 @@ public class HeatmapServiceImpl implements HeatmapService {
     /**
      * Computes the requested metric for a list of properties in the same locality.
      */
-    private double computeMetric(List<Property> properties, String metric) {
+    private double computeMetric(String city, String locality, List<Property> properties, String metric) {
         return switch (metric.toLowerCase()) {
             case "price_per_sqft" -> properties.stream()
                     .filter(p -> p.getArea() > 0)
@@ -108,9 +110,8 @@ public class HeatmapServiceImpl implements HeatmapService {
             case "listing_density" -> (double) properties.size();
 
             case "rental_demand" ->
-                // Placeholder — would need rental data
-                // For now, use listing count as a proxy
-                    (double) properties.size();
+                // Real data: Use the average yield of the locality as a proxy for demand/potential
+                rentalAnalysisDAO.getLocalityAverageYield(city, locality);
 
             default -> (double) properties.size();
         };

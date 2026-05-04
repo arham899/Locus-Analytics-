@@ -23,12 +23,15 @@ import java.util.stream.Collectors;
  */
 public class LinearRegressionPredictor {
 
-    private double intercept;
-    private Map<String, Double> coefficients;
-    private Map<String, Double> localityEncoding;
-    private List<String> featureOrder;
-    private double residualStd;
-    private boolean logTransformed;
+    private volatile double intercept;
+    private volatile Map<String, Double> coefficients;
+    private volatile Map<String, Double> localityEncoding;
+    private volatile List<String> featureOrder;
+    private volatile double residualStd;
+    private volatile boolean logTransformed;
+
+    private final String modelPath;
+    private volatile long modelFileLastModified = 0;
 
     /**
      * Loads the model from a JSON file path.
@@ -36,49 +39,75 @@ public class LinearRegressionPredictor {
      * @param modelPath path to model.json (relative or absolute)
      */
     public LinearRegressionPredictor(String modelPath) {
+        this.modelPath = modelPath;
+        loadModel(modelPath);
+    }
+
+    /**
+     * Checks whether the backing model file has been updated since last load
+     * and reloads it if so. Call this after each ETL/retraining run.
+     *
+     * @return true if the model was reloaded, false if unchanged
+     */
+    public synchronized boolean checkAndReloadIfUpdated() {
+        File file = new File(modelPath);
+        if (!file.exists()) return false;
+        long lastMod = file.lastModified();
+        if (lastMod > modelFileLastModified) {
+            double oldIntercept = this.intercept;
+            loadModel(modelPath);
+            System.out.printf("[Predictor] Model reloaded (intercept %.4f → %.4f, %d localities)%n",
+                    oldIntercept, this.intercept, this.localityEncoding.size());
+            return true;
+        }
+        return false;
+    }
+
+    private synchronized void loadModel(String path) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root;
 
-            // Try as file first, then classpath
-            File file = new File(modelPath);
+            File file = new File(path);
             if (file.exists()) {
                 root = mapper.readTree(file);
+                modelFileLastModified = file.lastModified();
             } else {
-                InputStream is = getClass().getClassLoader().getResourceAsStream(modelPath);
+                InputStream is = getClass().getClassLoader().getResourceAsStream(path);
                 if (is == null) {
-                    throw new RuntimeException("Model file not found: " + modelPath);
+                    throw new RuntimeException("Model file not found: " + path);
                 }
                 root = mapper.readTree(is);
+                modelFileLastModified = System.currentTimeMillis();
             }
 
             this.intercept = root.get("intercept").asDouble();
             this.logTransformed = root.get("log_transformed").asBoolean();
             this.residualStd = root.get("training_residual_std").asDouble();
 
-            // Load coefficients
-            this.coefficients = new LinkedHashMap<>();
+            Map<String, Double> newCoeffs = new LinkedHashMap<>();
             JsonNode coeffNode = root.get("coefficients");
             coeffNode.fieldNames().forEachRemaining(name ->
-                    coefficients.put(name, coeffNode.get(name).asDouble())
+                    newCoeffs.put(name, coeffNode.get(name).asDouble())
             );
+            this.coefficients = newCoeffs;
 
-            // Load locality encoding
-            this.localityEncoding = new LinkedHashMap<>();
+            Map<String, Double> newLocality = new LinkedHashMap<>();
             JsonNode locNode = root.get("locality_encoding");
             locNode.fieldNames().forEachRemaining(name ->
-                    localityEncoding.put(name, locNode.get(name).asDouble())
+                    newLocality.put(name, locNode.get(name).asDouble())
             );
+            this.localityEncoding = newLocality;
 
-            // Load feature order
-            this.featureOrder = new ArrayList<>();
-            root.get("feature_order").forEach(node -> featureOrder.add(node.asText()));
+            List<String> newFeatures = new ArrayList<>();
+            root.get("feature_order").forEach(node -> newFeatures.add(node.asText()));
+            this.featureOrder = newFeatures;
 
             System.out.println("[Predictor] Model loaded: " + featureOrder.size() +
                     " features, " + localityEncoding.size() + " localities");
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load ML model from: " + modelPath, e);
+            throw new RuntimeException("Failed to load ML model from: " + path, e);
         }
     }
 

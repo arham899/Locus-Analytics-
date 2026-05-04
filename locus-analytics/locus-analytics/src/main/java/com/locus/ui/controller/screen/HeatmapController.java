@@ -210,10 +210,15 @@ public class HeatmapController implements Initializable {
         try (InputStream stream = getClass().getClassLoader().getResourceAsStream("config.properties")) {
             if (stream != null) {
                 properties.load(stream);
-                return properties.getProperty("google.maps.api.key", "");
+                String key = properties.getProperty("google.maps.api.key", "");
+                if ("REPLACE_WITH_API_KEY".equals(key)) {
+                    showQuotaWarning(true);
+                    if (quotaLabel != null) quotaLabel.setText("Map Setup Required: Please provide a Google Maps API Key in config.properties.");
+                    return "";
+                }
+                return key;
             }
         } catch (Exception ignored) {
-            // fall back to empty key
         }
         return "";
     }

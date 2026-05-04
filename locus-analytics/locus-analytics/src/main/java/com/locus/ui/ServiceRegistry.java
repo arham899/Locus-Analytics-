@@ -1,6 +1,8 @@
 package com.locus.ui;
 
+import com.locus.dao.PropertyDAO;
 import com.locus.dao.impl.*;
+import com.locus.dao.impl.ValuationReportDAOImpl;
 import com.locus.ml.LinearRegressionPredictor;
 
 import com.locus.service.AuthenticationService;
@@ -53,6 +55,8 @@ public class ServiceRegistry {
     private final UserDAOImpl userDAO = new UserDAOImpl();
     private final SystemConfigurationDAOImpl configDAO = new SystemConfigurationDAOImpl();
     private final ETLJobDAOImpl etlJobDAO = new ETLJobDAOImpl();
+    private final AuditLogDAOImpl auditLogDAO = new AuditLogDAOImpl();
+    private final ValuationReportDAOImpl valuationReportDAO = new ValuationReportDAOImpl();
 
     // ── ML Predictor ────────────────────────────────
     private final LinearRegressionPredictor predictor = new LinearRegressionPredictor("ml/model.json");
@@ -65,15 +69,16 @@ public class ServiceRegistry {
     private final SearchService searchService = new SearchServiceImpl(propertyDAO);
     private final CompareService compareService = new CompareServiceImpl(propertyDAO, valuationDAO);
     private final PriceTrendService priceTrendService = new PriceTrendServiceImpl(propertyDAO);
-    private final HeatmapService heatmapService = new HeatmapServiceImpl(propertyDAO);
-    private final InvestmentClusterService investmentClusterService = new InvestmentClusterServiceImpl(propertyDAO, clusterDAO);
+    private final HeatmapService heatmapService = new HeatmapServiceImpl(propertyDAO, rentalAnalysisDAO);
+    private final InvestmentClusterService investmentClusterService = new InvestmentClusterServiceImpl(propertyDAO, clusterDAO, rentalAnalysisDAO);
 
     // ── Real Services (Phase 2 — Fasih) ─────────────
-    private final ValuationReportService valuationReportService = new ValuationReportServiceImpl(propertyDAO, valuationDAO);
+    private final ValuationReportService valuationReportService = new ValuationReportServiceImpl(
+            propertyDAO, valuationDAO, rentalAnalysisDAO, roiAnalysisDAO, priceTrendService, valuationReportDAO);
     private final ReportPdfService reportPdfService = new ReportPdfServiceImpl();
     private final ETLService etlService = new ETLServiceImpl(etlJobDAO);
     private final ListingManagementService listingManagementService = new ListingManagementServiceImpl(propertyDAO);
-    private final ConfigurationService configurationService = new ConfigurationServiceImpl(configDAO);
+    private final ConfigurationService configurationService = new ConfigurationServiceImpl(configDAO, auditLogDAO);
 
     public AuthenticationService authenticationService() {
         return authenticationService;
@@ -129,5 +134,9 @@ public class ServiceRegistry {
 
     public ConfigurationService configurationService() {
         return configurationService;
+    }
+
+    public PropertyDAO propertyDAO() {
+        return propertyDAO;
     }
 }

@@ -9,4 +9,8 @@ public interface RentalAnalysisDAO {
     List<RentalAnalysis> findByProperty(String propertyId);
 
     boolean insert(RentalAnalysis analysis);
+
+    double getCityAverageYield(String city);
+
+    double getLocalityAverageYield(String city, String locality);
 }

@@ -68,14 +68,37 @@ public class ReportPdfServiceImpl implements ReportPdfService {
                     }
                 }
                 y -= 8;
-                y = writeLine(content, "Embedded Charts", MARGIN_LEFT, y, PDType1Font.HELVETICA_BOLD, 13);
-                BufferedImage trendChart = buildPlaceholderImage("Price Trend Chart");
-                PDImageXObject trendImage = LosslessFactory.createFromImage(document, trendChart);
-                content.drawImage(trendImage, MARGIN_LEFT, y - 110, 220, 100);
+                y = writeLine(content, "Visual Analytics", MARGIN_LEFT, y, PDType1Font.HELVETICA_BOLD, 13);
+                
+                // --- 1. Trend Chart ---
+                if (report.getTrendChartImage() != null) {
+                    PDImageXObject trendImage = PDImageXObject.createFromByteArray(document, report.getTrendChartImage(), "trend-chart");
+                    content.drawImage(trendImage, MARGIN_LEFT, y - 160, 240, 150);
+                } else {
+                    BufferedImage placeholder = buildPlaceholderImage("Price Trend Chart (Not Generated)");
+                    PDImageXObject trendImage = LosslessFactory.createFromImage(document, placeholder);
+                    content.drawImage(trendImage, MARGIN_LEFT, y - 160, 240, 150);
+                }
 
-                BufferedImage heatmapSnap = buildPlaceholderImage("Heatmap Snapshot");
-                PDImageXObject heatmapImage = LosslessFactory.createFromImage(document, heatmapSnap);
-                content.drawImage(heatmapImage, MARGIN_LEFT + 240, y - 110, 220, 100);
+                // --- 2. ROI / Rental Chart ---
+                if (report.getRoiChartImage() != null) {
+                    PDImageXObject roiImage = PDImageXObject.createFromByteArray(document, report.getRoiChartImage(), "roi-chart");
+                    content.drawImage(roiImage, MARGIN_LEFT + 260, y - 160, 240, 150);
+                } else {
+                    BufferedImage placeholder = buildPlaceholderImage("Investment View (Not Generated)");
+                    PDImageXObject roiImage = LosslessFactory.createFromImage(document, placeholder);
+                    content.drawImage(roiImage, MARGIN_LEFT + 260, y - 160, 240, 150);
+                }
+                
+                y -= 170;
+
+                // --- 3. Heatmap Snapshot ---
+                if (report.getHeatmapSnapshotImage() != null) {
+                    y = writeLine(content, "Location Heatmap Snapshot", MARGIN_LEFT, y, PDType1Font.HELVETICA_BOLD, 13);
+                    PDImageXObject heatmapImage = PDImageXObject.createFromByteArray(document, report.getHeatmapSnapshotImage(), "heatmap");
+                    content.drawImage(heatmapImage, MARGIN_LEFT, y - 210, 500, 200);
+                    y -= 220;
+                }
                 drawFooter(content, page);
             }
 

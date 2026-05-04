@@ -70,6 +70,7 @@ public class ClusterController implements Initializable {
     private InvestmentClusterService investmentClusterService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private List<InvestmentCluster> latestClusters = List.of();
+    private String googleMapsApiKey = "";
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.investmentClusterService = serviceRegistry.investmentClusterService();
@@ -126,6 +127,7 @@ public class ClusterController implements Initializable {
             offlineNoticeLabel.setVisible(false);
         }
         UiAnimationHelper.attachSpringPress(identifyButton);
+        googleMapsApiKey = loadGoogleMapsApiKey();
     }
 
     @FXML
@@ -204,6 +206,7 @@ public class ClusterController implements Initializable {
                 if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
                     JSObject window = (JSObject) clusterMapWebView.getEngine().executeScript("window");
                     window.setMember("javaClusterBridge", new JavaClusterBridge());
+                    clusterMapWebView.getEngine().executeScript("setConfig(" + toJsString(googleMapsApiKey) + ");");
                 }
             });
         } else {
@@ -288,6 +291,18 @@ public class ClusterController implements Initializable {
     private String toJsString(String value) {
         if (value == null) return "''";
         return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'";
+    }
+
+    private String loadGoogleMapsApiKey() {
+        java.util.Properties properties = new java.util.Properties();
+        try (java.io.InputStream stream = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+            if (stream != null) {
+                properties.load(stream);
+                return properties.getProperty("google.maps.api.key", "");
+            }
+        } catch (Exception ignored) {
+        }
+        return "";
     }
 
     public class JavaClusterBridge {

@@ -38,8 +38,17 @@
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 24.8607, lng: 67.0011 },
             zoom: 11,
-            streetViewControl: false
+            maxZoom: 18,
+            minZoom: 2,
+            streetViewControl: false,
+            mapTypeControl: true
         });
+        
+        // Listen for fitBounds to prevent over-zooming
+        google.maps.event.addListenerOnce(map, 'zoom_changed', function() {
+            if (map.getZoom() > 15) map.setZoom(15);
+        });
+
         infoWindow = new google.maps.InfoWindow();
         heatmapLayer = new google.maps.visualization.HeatmapLayer({
             map: map,
@@ -70,11 +79,22 @@
         }
         const points = data || [];
         clearMarkers();
-        const heatData = points.map(p => ({
-            location: new google.maps.LatLng(p.latitude, p.longitude),
-            weight: p.weight
-        }));
+        if (points.length === 0) return;
+
+        const bounds = new google.maps.LatLngBounds();
+        const heatData = points.map(p => {
+            const loc = new google.maps.LatLng(p.latitude, p.longitude);
+            bounds.extend(loc);
+            return {
+                location: loc,
+                weight: p.weight
+            };
+        });
         heatmapLayer.setData(heatData);
+        
+        const center = bounds.getCenter();
+        map.setCenter(center);
+        map.setZoom(12);
 
         points.forEach(p => {
             const marker = new google.maps.Marker({

@@ -60,7 +60,37 @@ public class RentalYieldController implements Initializable {
     private final DoubleProperty netAnimated = new SimpleDoubleProperty(0);
     private final DoubleProperty cityAvgAnimated = new SimpleDoubleProperty(0);
 
+    private static final java.util.Map<String, java.util.List<String>> CURATED_LOCALITIES_BY_CITY = java.util.Map.of(
+            "Karachi", java.util.List.of(
+                    "DHA Phase 1", "DHA Phase 2", "DHA Phase 4", "DHA Phase 5", "DHA Phase 6",
+                    "DHA Phase 7", "DHA Phase 8", "Clifton", "Bahria Town Karachi",
+                    "Gulshan-e-Iqbal", "Gulistan-e-Johar", "Malir Cantt", "Askari 5",
+                    "PECHS", "North Nazimabad", "Federal B Area", "Saddar",
+                    "Korangi", "Nazimabad", "Scheme 33", "Saima Residency"
+            ),
+            "Islamabad", java.util.List.of(
+                    "F-6", "F-7", "F-8", "F-10", "F-11",
+                    "G-9", "G-10", "G-11", "G-13", "G-15",
+                    "E-7", "E-11", "I-8", "I-10",
+                    "DHA Phase 1 Islamabad", "DHA Phase 2 Islamabad",
+                    "Bahria Town Islamabad", "Bahria Enclave",
+                    "Gulberg Islamabad", "B-17", "PWD", "Park View City"
+            ),
+            "Lahore", java.util.List.of(
+                    "DHA Phase 1", "DHA Phase 2", "DHA Phase 3", "DHA Phase 4",
+                    "DHA Phase 5", "DHA Phase 6", "DHA Phase 7", "DHA Phase 8",
+                    "Gulberg", "Gulberg III", "Model Town", "Johar Town",
+                    "Bahria Town Lahore", "Bahria Orchard",
+                    "Wapda Town", "Garden Town", "Iqbal Town",
+                    "Cantt", "Askari", "EME Society", "Valencia Town",
+                    "Faisal Town", "PIA Housing Society"
+            )
+    );
+
+    private ServiceRegistry serviceRegistry;
+
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
         this.rentalYieldService = serviceRegistry.rentalYieldService();
     }
 
@@ -71,19 +101,14 @@ public class RentalYieldController implements Initializable {
         }
         if (cityComboBox != null) {
             cityComboBox.setItems(FXCollections.observableArrayList("Karachi", "Islamabad", "Lahore"));
+            cityComboBox.valueProperty().addListener((obs, oldCity, newCity) -> updateLocalities(newCity));
             cityComboBox.setValue("Karachi");
         }
         if (localityComboBox != null) {
-            localityComboBox.setItems(FXCollections.observableArrayList("DHA", "Clifton", "F-7", "Gulberg"));
-            localityComboBox.setValue("DHA");
+            updateLocalities("Karachi");
         }
         if (previousValuationComboBox != null) {
-            previousValuationComboBox.setItems(FXCollections.observableArrayList(
-                    "None",
-                    "Valuation p-001 (25,000,000)",
-                    "Valuation p-002 (31,500,000)",
-                    "Valuation p-003 (42,000,000)"
-            ));
+            previousValuationComboBox.setItems(FXCollections.observableArrayList("None"));
             previousValuationComboBox.setValue("None");
             previousValuationComboBox.valueProperty().addListener((obs, oldValue, newValue) -> applyPreviousValuation(newValue));
         }
@@ -237,6 +262,17 @@ public class RentalYieldController implements Initializable {
         if (recalculateButton != null) {
             recalculateButton.setDisable(loading);
             recalculateButton.setText(loading ? "Calculating..." : "Recalculate");
+        }
+    }
+
+    private void updateLocalities(String city) {
+        if (localityComboBox == null) return;
+        java.util.List<String> localities = CURATED_LOCALITIES_BY_CITY.getOrDefault(city, java.util.List.of());
+        localityComboBox.setItems(FXCollections.observableArrayList(localities));
+        if (!localities.isEmpty()) {
+            localityComboBox.setValue(localities.get(0));
+        } else {
+            localityComboBox.getSelectionModel().clearSelection();
         }
     }
 }

@@ -1,0 +1,36 @@
+{
+  "intercept": 10.0,
+  "coefficients": {
+    "area": 0.002,
+    "bedrooms": 0.3,
+    "bathrooms": 0.1,
+    "locality_encoded": 0.1,
+    "type_house": 0.5,
+    "type_apartment": 0.2,
+    "type_plot": -0.3,
+    "type_commercial": 0.8
+  },
+  "locality_encoding": {
+    "DHA Phase 5": 18.5,
+    "Clifton": 19.0,
+    "Gulberg": 18.0,
+    "Bahria Town": 17.5,
+    "Malir Cantt": 17.0,
+    "F-8": 18.8,
+    "Johar Town": 17.2,
+    "Sector F-8": 18.8
+  },
+  "feature_order": [
+    "area",
+    "bedrooms",
+    "bathrooms",
+    "locality_encoded",
+    "type_house",
+    "type_apartment",
+    "type_plot",
+    "type_commercial"
+  ],
+  "training_residual_std": 0.25,
+  "log_transformed": true,
+  "trained_date": "2025-01-01"
+}

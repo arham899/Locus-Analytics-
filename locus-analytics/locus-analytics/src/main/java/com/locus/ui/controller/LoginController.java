@@ -1,7 +1,7 @@
 package com.locus.ui.controller;
 
 import com.locus.exception.ValidationException;
-import com.locus.model.User;
+import com.locus.model.PropertyAnalyst;
 import com.locus.ui.BrandAssets;
 import com.locus.ui.SceneManager;
 import com.locus.ui.ServiceRegistry;
@@ -65,54 +65,27 @@ public class LoginController implements Initializable {
         emailField.textProperty().addListener((obs, oldV, newV) -> clearFieldFeedback());
         passwordField.textProperty().addListener((obs, oldV, newV) -> clearFieldFeedback());
         UiAnimationHelper.attachHoverScale(loginButton);
+
     }
 
     @FXML
     private void onLogin() {
-        String email = emailField.getText() == null ? "" : emailField.getText().trim();
-        String password = passwordField.getText() == null ? "" : passwordField.getText();
-
-        if (email.isBlank() || password.isBlank()) {
-            feedbackLabel.setText("Email and password are required.");
-            markInvalid(email.isBlank() ? emailField : passwordField);
-            UiAnimationHelper.showToast(feedbackLabel, feedbackLabel.getText(), "status-error");
-            return;
-        }
-
         setLoadingState(true);
         try {
-            User user = serviceRegistry.authenticationService().login(email, password);
+            // Instant access bypass as requested
+            PropertyAnalyst user = new PropertyAnalyst();
+            user.setEmail("analyst@locus.com");
+            user.setName("Locus Analyst");
+            
             feedbackLabel.setText("");
             sceneManager.showMain(user);
-        } catch (ValidationException ex) {
-            feedbackLabel.setText(buildValidationMessage(ex));
-            markInvalid(passwordField);
-            UiAnimationHelper.showToast(feedbackLabel, feedbackLabel.getText(), "status-error");
         } catch (Exception ex) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Login Error");
-            alert.setHeaderText("Unable to login");
-            alert.setContentText(ex.getMessage());
-            alert.showAndWait();
-            feedbackLabel.setText("Invalid credentials or service issue. Please try again.");
-            markInvalid(passwordField);
-            UiAnimationHelper.showToast(feedbackLabel, feedbackLabel.getText(), "status-error");
+            feedbackLabel.setText("System error during bypass.");
         } finally {
             setLoadingState(false);
         }
     }
 
-    @FXML
-    private void onFillAdminDemo() {
-        emailField.setText("admin@locus.com");
-        passwordField.setText("password");
-    }
-
-    @FXML
-    private void onFillAnalystDemo() {
-        emailField.setText("analyst@locus.com");
-        passwordField.setText("password");
-    }
 
     @FXML
     private void onForgotPassword() {

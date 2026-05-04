@@ -22,6 +22,7 @@ public class Valuation {
     private double confidenceIntervalLow;
     private double confidenceIntervalHigh;
     private List<String> keyFactors;
+    private int dataDensity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -103,6 +104,14 @@ public class Valuation {
 
     public void setKeyFactors(List<String> keyFactors) {
         this.keyFactors = keyFactors;
+    }
+
+    public int getDataDensity() {
+        return dataDensity;
+    }
+
+    public void setDataDensity(int dataDensity) {
+        this.dataDensity = dataDensity;
     }
 
     public LocalDateTime getCreatedAt() {

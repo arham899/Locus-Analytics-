@@ -105,4 +105,14 @@ public interface PropertyDAO {
 
     List<LocalityMetric> getLocalityMetrics(String city, int periodYears, int minListingCount);
 
+    /**
+     * Returns the distinct list of cities present in the property table.
+     */
+    List<String> findDistinctCities();
+
+    /**
+     * Returns the distinct list of localities for the given city.
+     */
+    List<String> findDistinctLocalities(String city);
+
 }

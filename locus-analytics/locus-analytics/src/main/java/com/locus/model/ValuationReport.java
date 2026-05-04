@@ -1,5 +1,8 @@
 package com.locus.model;
 
+import com.locus.model.dto.TrendPoint;
+import com.locus.model.dto.TrendStatistics;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,6 +28,21 @@ public class ValuationReport {
     private String pdfFilePath;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    // ── Transient section data (populated by service, not persisted) ──
+    private transient Property property;
+    private transient Valuation valuation;
+    private transient List<Property> comparables;
+    private transient RentalAnalysis rentalAnalysis;
+    private transient ROIAnalysis roiAnalysis;
+    private transient List<TrendPoint> priceTrendPoints;
+    private transient TrendStatistics trendStatistics;
+
+    // ── Transient chart images (captured from UI for PDF) ──────────────
+    private transient byte[] trendChartImage;
+    private transient byte[] roiChartImage;
+    private transient byte[] rentalChartImage;
+    private transient byte[] heatmapSnapshotImage;
 
     // ── Constructors ──────────────────────────────────────────────────
 
@@ -147,6 +165,41 @@ public class ValuationReport {
         }
         return list;
     }
+
+    // ── Transient section data getters/setters ────────────────────────
+
+    public Property getProperty() { return property; }
+    public void setProperty(Property property) { this.property = property; }
+
+    public Valuation getValuation() { return valuation; }
+    public void setValuation(Valuation valuation) { this.valuation = valuation; }
+
+    public List<Property> getComparables() { return comparables; }
+    public void setComparables(List<Property> comparables) { this.comparables = comparables; }
+
+    public RentalAnalysis getRentalAnalysis() { return rentalAnalysis; }
+    public void setRentalAnalysis(RentalAnalysis rentalAnalysis) { this.rentalAnalysis = rentalAnalysis; }
+
+    public ROIAnalysis getRoiAnalysis() { return roiAnalysis; }
+    public void setRoiAnalysis(ROIAnalysis roiAnalysis) { this.roiAnalysis = roiAnalysis; }
+
+    public List<TrendPoint> getPriceTrendPoints() { return priceTrendPoints; }
+    public void setPriceTrendPoints(List<TrendPoint> priceTrendPoints) { this.priceTrendPoints = priceTrendPoints; }
+
+    public TrendStatistics getTrendStatistics() { return trendStatistics; }
+    public void setTrendStatistics(TrendStatistics trendStatistics) { this.trendStatistics = trendStatistics; }
+
+    public byte[] getTrendChartImage() { return trendChartImage; }
+    public void setTrendChartImage(byte[] trendChartImage) { this.trendChartImage = trendChartImage; }
+
+    public byte[] getRoiChartImage() { return roiChartImage; }
+    public void setRoiChartImage(byte[] roiChartImage) { this.roiChartImage = roiChartImage; }
+
+    public byte[] getRentalChartImage() { return rentalChartImage; }
+    public void setRentalChartImage(byte[] rentalChartImage) { this.rentalChartImage = rentalChartImage; }
+
+    public byte[] getHeatmapSnapshotImage() { return heatmapSnapshotImage; }
+    public void setHeatmapSnapshotImage(byte[] heatmapSnapshotImage) { this.heatmapSnapshotImage = heatmapSnapshotImage; }
 
     // ── equals / hashCode / toString ──────────────────────────────────
 

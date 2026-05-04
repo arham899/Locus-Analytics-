@@ -19,6 +19,32 @@ def clean_property_type(ptype):
         return "Unknown"
     return ptype.strip().capitalize()
 
+def clean_area(area_str):
+    """
+    Standardizes area to Marla.
+    Supports: '5 Marla', '1 Kanal', '500 Sq. Ft.'
+    """
+    if not area_str:
+        return 10.0 # Default fallback
+    
+    area_str = str(area_str).lower().strip()
+    
+    # Extract numeric part
+    import re
+    match = re.search(r"(\d+\.?\d*)", area_str)
+    if not match:
+        return 10.0
+    
+    value = float(match.group(1))
+    
+    if "kanal" in area_str:
+        return value * 20.0
+    elif "sq. ft." in area_str or "sqft" in area_str:
+        return value / 225.0
+    else:
+        # Assume Marla if no unit or unit is Marla
+        return value
+
 def generate_id(title, price):
     raw_string = f"{title}{price}"
     return "P_" + hashlib.md5(raw_string.encode()).hexdigest()[:10]

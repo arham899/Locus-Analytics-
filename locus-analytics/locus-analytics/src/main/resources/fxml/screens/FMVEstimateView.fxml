@@ -10,6 +10,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
@@ -28,17 +29,22 @@
     </VBox>
 
     <GridPane hgap="12.0" vgap="12.0">
-        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="33.333" hgrow="ALWAYS"/>
+            <ColumnConstraints percentWidth="33.333" hgrow="ALWAYS"/>
+            <ColumnConstraints percentWidth="33.334" hgrow="ALWAYS"/>
+        </columnConstraints>
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" maxWidth="1.7976931348623157E308" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
             <Label text="FMV ESTIMATE" styleClass="terminal-kpi-label"/>
-            <Label fx:id="estimatedFmvLabel" text="PKR 31.5M" styleClass="terminal-kpi-value"/>
+            <Label fx:id="estimatedFmvLabel" text="PKR 31.5M" styleClass="terminal-kpi-value" wrapText="true"/>
             <Label text="Updated 12m trend" styleClass="terminal-muted-text"/>
         </VBox>
-        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
             <Label text="CONFIDENCE BAND" styleClass="terminal-kpi-label"/>
-            <Label fx:id="confidenceLabel" text="86%" styleClass="terminal-kpi-value"/>
+            <Label fx:id="confidenceLabel" text="86%" styleClass="terminal-kpi-value" wrapText="true"/>
             <Label text="High reliability" styleClass="terminal-status-label"/>
         </VBox>
-        <VBox spacing="5.0" styleClass="terminal-kpi-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+        <VBox spacing="5.0" styleClass="terminal-kpi-card" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
             <Label text="DRIVER SIGNAL" styleClass="terminal-kpi-label"/>
             <Label fx:id="factorsLabel" text="Demand + Transit + Inventory" styleClass="terminal-kpi-value" wrapText="true"/>
             <Label text="Composite strength" styleClass="terminal-muted-text"/>
@@ -48,13 +54,19 @@
     <VBox spacing="8.0" styleClass="terminal-card">
         <Label text="Valuation Inputs" styleClass="terminal-card-title"/>
         <GridPane hgap="10.0" vgap="10.0">
+            <columnConstraints>
+                <ColumnConstraints minWidth="100.0" prefWidth="120.0" halignment="LEFT"/>
+                <ColumnConstraints minWidth="160.0" prefWidth="220.0" hgrow="SOMETIMES"/>
+                <ColumnConstraints minWidth="100.0" prefWidth="120.0" halignment="LEFT"/>
+                <ColumnConstraints minWidth="160.0" prefWidth="220.0" hgrow="SOMETIMES"/>
+            </columnConstraints>
             <Label text="City" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <ComboBox fx:id="cityComboBox" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="cityComboBox" styleClass="stitch-input" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
             <Label text="Locality" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-            <ComboBox fx:id="localityComboBox" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="localityComboBox" styleClass="stitch-input" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
 
             <Label text="Property Type" styleClass="terminal-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <ComboBox fx:id="propertyTypeComboBox" styleClass="stitch-input" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <ComboBox fx:id="propertyTypeComboBox" styleClass="stitch-input" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
             <Label text="Area (sq.ft.)" styleClass="terminal-label" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
             <TextField fx:id="areaField" promptText="2250" styleClass="stitch-input" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
 

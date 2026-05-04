@@ -85,15 +85,39 @@ public class FMVEstimateController implements Initializable {
     private final DoubleProperty estimatedFmvAnimated = new SimpleDoubleProperty(0);
     private final DoubleProperty confidenceLowAnimated = new SimpleDoubleProperty(0);
     private final DoubleProperty confidenceHighAnimated = new SimpleDoubleProperty(0);
-    private static final Map<String, List<String>> LOCALITIES_BY_CITY = Map.of(
-            "Karachi", List.of("DHA Phase 6", "Clifton", "Bahria Town"),
-            "Islamabad", List.of("F-7", "G-11", "DHA Islamabad"),
-            "Lahore", List.of("Gulberg", "DHA Lahore", "Johar Town")
+    private static final Map<String, List<String>> CURATED_LOCALITIES_BY_CITY = Map.of(
+            "Karachi", List.of(
+                    "DHA Phase 1", "DHA Phase 2", "DHA Phase 4", "DHA Phase 5", "DHA Phase 6",
+                    "DHA Phase 7", "DHA Phase 8", "Clifton", "Bahria Town Karachi",
+                    "Gulshan-e-Iqbal", "Gulistan-e-Johar", "Malir Cantt", "Askari 5",
+                    "PECHS", "North Nazimabad", "Federal B Area", "Saddar",
+                    "Korangi", "Nazimabad", "Scheme 33", "Saima Residency"
+            ),
+            "Islamabad", List.of(
+                    "F-6", "F-7", "F-8", "F-10", "F-11",
+                    "G-9", "G-10", "G-11", "G-13", "G-15",
+                    "E-7", "E-11", "I-8", "I-10",
+                    "DHA Phase 1 Islamabad", "DHA Phase 2 Islamabad",
+                    "Bahria Town Islamabad", "Bahria Enclave",
+                    "Gulberg Islamabad", "B-17", "PWD", "Park View City"
+            ),
+            "Lahore", List.of(
+                    "DHA Phase 1", "DHA Phase 2", "DHA Phase 3", "DHA Phase 4",
+                    "DHA Phase 5", "DHA Phase 6", "DHA Phase 7", "DHA Phase 8",
+                    "Gulberg", "Gulberg III", "Model Town", "Johar Town",
+                    "Bahria Town Lahore", "Bahria Orchard",
+                    "Wapda Town", "Garden Town", "Iqbal Town",
+                    "Cantt", "Askari", "EME Society", "Valencia Town",
+                    "Faisal Town", "PIA Housing Society"
+            )
     );
     private Valuation lastValuation;
     private Property lastInputProperty;
 
+    private ServiceRegistry serviceRegistry;
+
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
         this.valuationService = serviceRegistry.valuationService();
     }
 
@@ -160,13 +184,13 @@ public class FMVEstimateController implements Initializable {
 
         // Dashboard mode fallback defaults
         if (estimatedFmvLabel != null && "-".equals(estimatedFmvLabel.getText())) {
-            estimatedFmvLabel.setText("42.5B PKR");
+            estimatedFmvLabel.setText("-");
         }
         if (confidenceLabel != null && "-".equals(confidenceLabel.getText())) {
-            confidenceLabel.setText("4.2%");
+            confidenceLabel.setText("-");
         }
         if (factorsLabel != null && "-".equals(factorsLabel.getText())) {
-            factorsLabel.setText("12,450");
+            factorsLabel.setText("-");
         }
         estimatedFmvAnimated.addListener((obs, oldValue, newValue) ->
                 estimatedFmvLabel.setText(UiFormatters.currency(newValue.doubleValue())));
@@ -191,9 +215,9 @@ public class FMVEstimateController implements Initializable {
         try {
             // If form fields are missing, treat this page as dashboard refresh mode.
             if (cityComboBox == null || areaField == null) {
-                estimatedFmvLabel.setText("42.5B PKR");
-                confidenceLabel.setText("4.2%");
-                factorsLabel.setText("12,450");
+                estimatedFmvLabel.setText("-");
+                confidenceLabel.setText("-");
+                factorsLabel.setText("-");
                 UiFeedbackHelper.setStatus(statusLabel, "Market intelligence metrics refreshed.", "status-success");
                 return;
             }
@@ -323,7 +347,7 @@ public class FMVEstimateController implements Initializable {
         if (localityComboBox == null) {
             return;
         }
-        List<String> localities = LOCALITIES_BY_CITY.getOrDefault(city, List.of());
+        List<String> localities = CURATED_LOCALITIES_BY_CITY.getOrDefault(city, List.of());
         localityComboBox.setItems(FXCollections.observableArrayList(localities));
         if (!localities.isEmpty()) {
             localityComboBox.setValue(localities.get(0));

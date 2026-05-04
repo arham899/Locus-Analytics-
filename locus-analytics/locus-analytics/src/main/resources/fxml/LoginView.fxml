@@ -48,11 +48,6 @@
 
             <Pane prefHeight="18.0"/>
             <Pane styleClass="stitch-divider"/>
-            <Label text="Quick Access Demos" styleClass="stitch-demo-label"/>
-            <HBox spacing="12.0" alignment="CENTER_LEFT" maxWidth="440.0">
-                <Button text="Use Admin Demo" onAction="#onFillAdminDemo" styleClass="stitch-demo-button" HBox.hgrow="ALWAYS"/>
-                <Button text="Use Analyst Demo" onAction="#onFillAnalystDemo" styleClass="stitch-demo-button" HBox.hgrow="ALWAYS"/>
-            </HBox>
             <Label fx:id="feedbackLabel" wrapText="true" styleClass="stitch-feedback-label"/>
         </VBox>
 
@@ -68,13 +63,13 @@
                     <Label text="Revolutionize Real Estate with Smarter Analytics" wrapText="true" styleClass="stitch-hero-heading"/>
                     <VBox spacing="12.0" styleClass="stitch-quote-card">
                         <Label text="❝" styleClass="stitch-quote-mark"/>
-                        <Label text="&quot;LOCUS Analytics transformed how we evaluate market opportunities. It's fast, reliable, and decision-ready.&quot;"
+                        <Label text="&quot;Our institutional-grade analytics provide the clarity needed for complex real estate valuations and market forecasting.&quot;"
                                wrapText="true" styleClass="stitch-hero-quote"/>
                         <HBox spacing="10.0" alignment="CENTER_LEFT">
-                            <Label text="AA" styleClass="stitch-avatar"/>
+                            <Label text="LA" styleClass="stitch-avatar"/>
                             <VBox spacing="2.0">
-                                <Label text="Ayaan Aman" styleClass="stitch-hero-person-name"/>
-                                <Label text="Frontend Architect" styleClass="stitch-hero-person-role"/>
+                                <Label text="Locus Analytics Team" styleClass="stitch-hero-person-name"/>
+                                <Label text="Institutional Research" styleClass="stitch-hero-person-role"/>
                             </VBox>
                         </HBox>
                     </VBox>

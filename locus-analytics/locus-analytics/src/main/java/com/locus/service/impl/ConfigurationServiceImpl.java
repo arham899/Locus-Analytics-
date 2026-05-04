@@ -12,10 +12,12 @@ import java.util.Objects;
 public class ConfigurationServiceImpl implements ConfigurationService {
 
     private final SystemConfigurationDAO configDAO;
+    private final com.locus.dao.AuditLogDAO auditDAO;
     private static final String DEFAULT_CONFIG_ID = "config-default";
 
-    public ConfigurationServiceImpl(SystemConfigurationDAO configDAO) {
+    public ConfigurationServiceImpl(SystemConfigurationDAO configDAO, com.locus.dao.AuditLogDAO auditDAO) {
         this.configDAO = configDAO;
+        this.auditDAO = auditDAO;
     }
 
     @Override
@@ -67,10 +69,16 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public void logAuditEntry(String adminId, String field, String oldVal, String newVal) {
-        // Since there is no AuditDAO, we log to console.
-        // In a real system, this would insert into an audit_logs table.
-        String safeAdminId = Objects.toString(adminId, "UNKNOWN");
+        com.locus.model.AuditLog log = new com.locus.model.AuditLog(
+                adminId, "system_configuration", field, oldVal, newVal
+        );
+        try {
+            auditDAO.insert(log);
+        } catch (Exception e) {
+            System.err.println("[ConfigurationService] Warning: could not persist audit log: " + e.getMessage());
+        }
+        
         System.out.printf("[AUDIT] User %s updated %s: '%s' -> '%s'%n",
-                safeAdminId, field, oldVal, newVal);
+                Objects.toString(adminId, "UNKNOWN"), field, oldVal, newVal);
     }
 }

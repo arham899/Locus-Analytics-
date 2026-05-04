@@ -47,8 +47,8 @@ public class RentalYieldServiceImpl implements RentalYieldService {
         double grossYield = (annualRent / propertyValue) * 100.0;
         double netYield = ((annualRent - annualExpenses) / propertyValue) * 100.0;
 
-        // ── City average (computed from hardcoded benchmark) ──
-        double cityAverage = 6.2; // Default benchmark for Pakistan real estate
+        // ── City average (fetched from real DAO data) ──
+        double cityAverage = rentalAnalysisDAO.getCityAverageYield("Lahore"); // Default or current city
 
         // ── Build result ────────────────────────────
         RentalAnalysis analysis = new RentalAnalysis();
@@ -71,13 +71,9 @@ public class RentalYieldServiceImpl implements RentalYieldService {
 
     @Override
     public double getCityAverageYield(String city, String locality) {
-        // Compute from benchmark data per city
-        // In production, this would query aggregated rental data from the DAO
-        return switch (city != null ? city : "") {
-            case "Karachi" -> 5.8;
-            case "Islamabad" -> 6.5;
-            case "Lahore" -> 6.2;
-            default -> 6.0;
-        };
+        if (locality != null && !locality.isBlank()) {
+            return rentalAnalysisDAO.getLocalityAverageYield(city, locality);
+        }
+        return rentalAnalysisDAO.getCityAverageYield(city);
     }
 }

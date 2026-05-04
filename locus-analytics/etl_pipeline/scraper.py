@@ -10,7 +10,11 @@ USER_AGENTS = [
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/118.0 Safari/537.36"
 ]
 
-BASE_URL = "https://www.zameen.com/Homes/Lahore-1-1.html"
+CITY_URLS = {
+    "Lahore": "https://www.zameen.com/Homes/Lahore-1-1.html",
+    "Karachi": "https://www.zameen.com/Homes/Karachi-2-1.html",
+    "Islamabad": "https://www.zameen.com/Homes/Islamabad-3-1.html"
+}
 
 
 def get_headers():
@@ -20,12 +24,15 @@ def get_headers():
     }
 
 
-def fetch_listings(pages=1):
+def fetch_listings(city="Lahore", pages=1):
     listings = []
     current_delay = 2.0
 
+    base_url = CITY_URLS.get(city, CITY_URLS["Lahore"])
+
     for page in range(1, pages + 1):
-        url = f"{BASE_URL}?page={page}"
+        url = f"{base_url}?page={page}"
+        print(f"  [PAGE {page}/{pages}] Requesting: {url}")
 
         try:
             response = requests.get(url, headers=get_headers(), timeout=10)
@@ -80,12 +87,20 @@ def fetch_listings(pages=1):
                     else:
                         property_type = type_tag.get_text(strip=True).lower()
 
+                    # ✅ Area
+                    area_tag = card.find("span", {"aria-label": "Area"})
+                    if not area_tag:
+                        area_tag = card.select_one("[data-testid='listing-area']")
+                    area = area_tag.get_text(strip=True) if area_tag else None
+
                     if title and price:
+                        print(f"    - Extracted: {title[:40]}... | {price} | Area: {area}")
                         listings.append({
                             "title": title,
                             "price": price,
+                            "area": area,
                             "type": property_type,
-                            "url": card.find("a")["href"] if card.find("a") else None  # ✅ ADD THIS
+                            "url": card.find("a")["href"] if card.find("a") else None
                         })
 
                 except Exception as e:

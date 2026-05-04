@@ -158,4 +158,54 @@ public class RentalAnalysisDAOImpl implements RentalAnalysisDAO {
 
         return r;
     }
+
+    @Override
+    public double getCityAverageYield(String city) {
+        String sql = """
+            SELECT AVG(gross_yield)
+            FROM rental_analysis r
+            JOIN property p ON r.property_id = p.property_id
+            WHERE p.city = ?
+        """;
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, city);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) return rs.getDouble(1);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 6.0;
+    }
+
+    @Override
+    public double getLocalityAverageYield(String city, String locality) {
+        String sql = """
+            SELECT AVG(gross_yield)
+            FROM rental_analysis r
+            JOIN property p ON r.property_id = p.property_id
+            WHERE p.city = ? AND p.locality = ?
+        """;
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, city);
+            stmt.setString(2, locality);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                double avg = rs.getDouble(1);
+                return avg > 0 ? avg : getCityAverageYield(city);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return getCityAverageYield(city);
+    }
 }

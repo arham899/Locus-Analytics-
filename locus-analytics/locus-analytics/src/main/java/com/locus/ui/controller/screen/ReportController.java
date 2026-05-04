@@ -5,43 +5,42 @@ import com.locus.service.ReportPdfService;
 import com.locus.service.ValuationReportService;
 import com.locus.ui.controller.UiNavigationBridge;
 import com.locus.ui.ServiceRegistry;
+import com.locus.model.ROIAnalysis;
+import com.locus.model.dto.TrendPoint;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.concurrent.Task;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.chart.*;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.stage.FileChooser;
 
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+
 import javax.imageio.ImageIO;
-import javax.print.Doc;
-import javax.print.DocFlavor;
-import javax.print.DocPrintJob;
-import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
-import javax.print.SimpleDoc;
+import javax.print.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -110,7 +109,7 @@ public class ReportController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         if (propertyIdField != null) {
-            propertyIdField.setText("p-001");
+            propertyIdField.setText("");
         }
         seedValuationSelector();
         String prefill = UiNavigationBridge.consumeReportPropertyId();
@@ -141,10 +140,10 @@ public class ReportController implements Initializable {
                     new SimpleStringProperty(cell.getValue().getGenerationDate() == null ? "-" : cell.getValue().getGenerationDate().toString()));
         }
         if (confidenceColumn != null) {
-            confidenceColumn.setCellValueFactory(cell -> new SimpleStringProperty("95.0%"));
+            confidenceColumn.setCellValueFactory(cell -> new SimpleStringProperty("-"));
         }
         if (statusColumn != null) {
-            statusColumn.setCellValueFactory(cell -> new SimpleStringProperty("READY"));
+            statusColumn.setCellValueFactory(cell -> new SimpleStringProperty("-"));
         }
         if (reportsTable != null) {
             reportsTable.setItems(generatedReports);
@@ -190,6 +189,18 @@ public class ReportController implements Initializable {
                         sections,
                         analystNotesArea == null ? "" : analystNotesArea.getText()
                 );
+
+                // --- CAPTURE SNAPSHOTS (must run on FX thread) ---
+                if (sections.contains("price_trend")) {
+                    report.setTrendChartImage(runOnFxThread(() -> captureTrendSnapshot(report.getPriceTrendPoints())));
+                }
+                if (sections.contains("roi") && report.getRoiAnalysis() != null) {
+                    report.setRoiChartImage(runOnFxThread(() -> captureRoiSnapshot(report.getRoiAnalysis())));
+                }
+                if (sections.contains("heatmap")) {
+                    report.setHeatmapSnapshotImage(runOnFxThread(() -> captureNodeSnapshot(heatmapCheckBox))); // Dummy for now, or use WebView
+                }
+
                 Path generatedPath = reportPdfService.generatePdf(report);
                 report.setPdfFilePath(generatedPath.toString());
                 return report;
@@ -381,6 +392,72 @@ public class ReportController implements Initializable {
     private ValuationReport currentReport() {
         ValuationReport selected = reportsTable == null ? null : reportsTable.getSelectionModel().getSelectedItem();
         return selected != null ? selected : latestGeneratedReport;
+    }
+
+    // --- SNAPSHOT UTILITIES ---
+
+    private <T> T runOnFxThread(Callable<T> callable) throws Exception {
+        FutureTask<T> task = new FutureTask<>(callable);
+        Platform.runLater(task);
+        return task.get();
+    }
+
+    private byte[] captureTrendSnapshot(List<TrendPoint> points) {
+        if (points == null || points.isEmpty()) return null;
+        
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+        chart.setAnimated(false);
+        chart.setCreateSymbols(true);
+        chart.setPrefSize(800, 400);
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Price Trend");
+        for (TrendPoint p : points) {
+            series.getData().add(new XYChart.Data<>(p.getPeriod(), p.getAveragePrice()));
+        }
+        chart.getData().add(series);
+
+        // Force layout
+        new Scene(chart);
+        return takeSnapshot(chart);
+    }
+
+    private byte[] captureRoiSnapshot(ROIAnalysis roi) {
+        if (roi == null) return null;
+        
+        PieChart chart = new PieChart();
+        chart.setAnimated(false);
+        chart.setPrefSize(600, 400);
+        
+        double appreciation = Math.max(0, roi.getCurrentValue() - roi.getPurchasePrice());
+        double income = Math.max(0, roi.getCumulativeRentalIncome());
+        
+        chart.getData().add(new PieChart.Data("Capital Appreciation", appreciation));
+        chart.getData().add(new PieChart.Data("Rental Income", income));
+
+        new Scene(chart);
+        return takeSnapshot(chart);
+    }
+
+    private byte[] captureNodeSnapshot(javafx.scene.Node node) {
+        if (node == null) return null;
+        return takeSnapshot(node);
+    }
+
+    private byte[] takeSnapshot(javafx.scene.Node node) {
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        WritableImage image = node.snapshot(params, null);
+        
+        BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            ImageIO.write(bImage, "png", out);
+            return out.toByteArray();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }
