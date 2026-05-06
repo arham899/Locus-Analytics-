@@ -40,8 +40,8 @@ public class ETLServiceImpl implements ETLService {
 
     private void runPythonScript(ETLJob job) {
         try {
-            // Note: This relies on python being in PATH and the script being at etl_pipeline/etl_main.py
-            ProcessBuilder pb = new ProcessBuilder("python", "etl_pipeline/etl_main.py");
+            // Note: This relies on python being in PATH and the script being at etl/run_etl.py
+            ProcessBuilder pb = new ProcessBuilder("python", "etl/run_etl.py");
             pb.directory(new File(".")); 
             pb.redirectErrorStream(true);
             Process process = pb.start();

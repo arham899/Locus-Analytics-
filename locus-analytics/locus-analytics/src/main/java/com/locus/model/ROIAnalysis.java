@@ -34,6 +34,8 @@ public class ROIAnalysis {
     public ROIAnalysis() {
         this.analysisId = UUID.randomUUID().toString();
         this.analysisDate = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /** Full constructor for database retrieval. */

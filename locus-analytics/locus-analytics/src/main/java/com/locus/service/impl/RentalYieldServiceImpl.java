@@ -58,6 +58,11 @@ public class RentalYieldServiceImpl implements RentalYieldService {
         analysis.setGrossYield(grossYield);
         analysis.setNetYield(netYield);
         analysis.setCityAverage(cityAverage);
+        
+        // Ensure propertyId is not null to satisfy DB constraint
+        if (analysis.getPropertyId() == null) {
+            analysis.setPropertyId("AD_HOC_PROP_" + java.util.UUID.randomUUID().toString().substring(0, 8));
+        }
 
         // ── Persist ─────────────────────────────────
         try {

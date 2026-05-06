@@ -112,11 +112,11 @@ public class ROIController implements Initializable {
                 return;
             }
             ROIInput input = new ROIInput();
-            input.setPurchasePrice(Double.parseDouble(purchasePriceField.getText().trim()));
+            input.setPurchasePrice(Double.parseDouble(purchasePriceField.getText().trim().replace(",", "")));
             input.setPurchaseDate(purchaseDatePicker.getValue());
-            input.setCurrentValue(Double.parseDouble(currentValueField.getText().trim()));
-            input.setCumulativeRentalIncome(Double.parseDouble(cumulativeRentalIncomeField.getText().trim()));
-            input.setTotalExpenses(Double.parseDouble(totalExpensesField.getText().trim()));
+            input.setCurrentValue(Double.parseDouble(currentValueField.getText().trim().replace(",", "")));
+            input.setCumulativeRentalIncome(Double.parseDouble(cumulativeRentalIncomeField.getText().trim().replace(",", "")));
+            input.setTotalExpenses(Double.parseDouble(totalExpensesField.getText().trim().replace(",", "")));
 
             Task<ROIAnalysis> task = new Task<>() {
                 @Override
@@ -186,7 +186,7 @@ public class ROIController implements Initializable {
             property.setBedrooms(4);
             property.setBathrooms(3);
             property.setListingDate(LocalDate.now());
-            property.setPrice(Double.parseDouble(purchasePriceField.getText().trim()));
+            property.setPrice(Double.parseDouble(purchasePriceField.getText().trim().replace(",", "")));
             property.setAmenities(List.of("parking", "security"));
 
             Task<Valuation> task = new Task<>() {

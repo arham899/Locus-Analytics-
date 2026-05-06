@@ -358,7 +358,7 @@ public class FMVEstimateController implements Initializable {
 
     private double parseDouble(String raw, String field) {
         try {
-            return Double.parseDouble(raw.trim());
+            return Double.parseDouble(raw.trim().replace(",", ""));
         } catch (Exception ex) {
             throw new IllegalArgumentException("Invalid " + field + " value.");
         }

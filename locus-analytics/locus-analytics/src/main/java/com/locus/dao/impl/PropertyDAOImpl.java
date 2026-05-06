@@ -627,6 +627,16 @@ HAVING
             params.add(filter.getMaxPrice());
         }
 
+        if (filter.getMinArea() != null) {
+            whereSql.append(" AND area >= ?");
+            params.add(filter.getMinArea());
+        }
+
+        if (filter.getMaxArea() != null) {
+            whereSql.append(" AND area <= ?");
+            params.add(filter.getMaxArea());
+        }
+
         if (filter.getLocality() != null) {
             whereSql.append(" AND locality = ?");
             params.add(filter.getLocality());

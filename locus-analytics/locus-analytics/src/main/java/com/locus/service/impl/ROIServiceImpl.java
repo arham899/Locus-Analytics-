@@ -83,6 +83,11 @@ public class ROIServiceImpl implements ROIService {
         analysis.setTotalReturn(totalReturn);
         analysis.setRoiPercentage(roiPercentage);
         analysis.setAnnualizedROI(annualizedROI);
+        
+        // Ensure propertyId is not null to satisfy DB constraint
+        if (analysis.getPropertyId() == null) {
+            analysis.setPropertyId("AD_HOC_ROI_" + java.util.UUID.randomUUID().toString().substring(0, 8));
+        }
 
         // ── Persist ─────────────────────────────────
         try {

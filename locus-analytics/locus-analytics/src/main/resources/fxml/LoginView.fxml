@@ -33,7 +33,7 @@
 
             <VBox spacing="10.0" maxWidth="440.0">
                 <Label text="Email Address" styleClass="stitch-form-label"/>
-                <TextField fx:id="emailField" promptText="analyst@firm.com" styleClass="stitch-input"/>
+                <TextField fx:id="emailField" promptText="admin@locus.com" styleClass="stitch-input"/>
 
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Password" styleClass="stitch-form-label"/>
@@ -46,9 +46,16 @@
                         maxWidth="1.7976931348623157E308" styleClass="stitch-login-submit"/>
             </VBox>
 
-            <Pane prefHeight="18.0"/>
+            <Pane prefHeight="14.0"/>
             <Pane styleClass="stitch-divider"/>
+            <Pane prefHeight="8.0"/>
             <Label fx:id="feedbackLabel" wrapText="true" styleClass="stitch-feedback-label"/>
+            <Pane prefHeight="6.0"/>
+            <VBox spacing="6.0" styleClass="stitch-demo-hint-card">
+                <Label text="DEMO ACCOUNTS" styleClass="stitch-demo-hint-title"/>
+                <Label text="Admin: admin@locus.com  /  password" styleClass="stitch-demo-hint-row"/>
+                <Label text="Analyst: analyst@locus.com  /  password" styleClass="stitch-demo-hint-row"/>
+            </VBox>
         </VBox>
 
         <StackPane styleClass="stitch-login-right-pane" HBox.hgrow="ALWAYS">

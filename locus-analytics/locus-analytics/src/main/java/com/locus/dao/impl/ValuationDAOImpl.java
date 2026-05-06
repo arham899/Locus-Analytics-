@@ -61,8 +61,9 @@ public class ValuationDAOImpl implements ValuationDAO {
             stmt.setDouble(4, v.getConfidenceIntervalLow());
             stmt.setDouble(5, v.getConfidenceIntervalHigh());
 
-            stmt.setTimestamp(6, Timestamp.valueOf(v.getCreatedAt()));
-            stmt.setTimestamp(7, Timestamp.valueOf(v.getUpdatedAt()));
+            java.time.LocalDateTime now = java.time.LocalDateTime.now();
+            stmt.setTimestamp(6, Timestamp.valueOf(v.getCreatedAt() != null ? v.getCreatedAt() : now));
+            stmt.setTimestamp(7, Timestamp.valueOf(v.getUpdatedAt() != null ? v.getUpdatedAt() : now));
 
             return stmt.executeUpdate() > 0;
 

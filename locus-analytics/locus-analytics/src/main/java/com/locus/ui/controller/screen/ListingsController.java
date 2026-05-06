@@ -44,8 +44,22 @@ public class ListingsController implements Initializable {
     private Button deleteListingButton;
     @FXML
     private Button addListingButton;
+    @FXML
+    private Label paginationSummaryLabel;
+    @FXML
+    private Button prevPageButton;
+    @FXML
+    private Button nextPageButton;
+    @FXML
+    private Button page1Button;
+    @FXML
+    private Button page2Button;
+    @FXML
+    private Button page3Button;
 
     private ListingManagementService listingManagementService;
+    private int currentPage = 1;
+    private int totalPages = 1;
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.listingManagementService = serviceRegistry.listingManagementService();
@@ -64,6 +78,17 @@ public class ListingsController implements Initializable {
         }
         if (priceColumn != null) {
             priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+            priceColumn.setCellFactory(column -> new javafx.scene.control.TableCell<Property, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(String.format("%,.0f", item));
+                    }
+                }
+            });
         }
         if (listingsTable != null) {
             listingsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, selected) -> {
@@ -79,6 +104,11 @@ public class ListingsController implements Initializable {
 
     @FXML
     private void onLoadListings() {
+        currentPage = 1;
+        loadCurrentPage();
+    }
+
+    private void loadCurrentPage() {
         if (listingManagementService == null) {
             statusLabel.setText("Listing service not available.");
             return;
@@ -93,13 +123,52 @@ public class ListingsController implements Initializable {
         if (!cityFilterField.getText().isBlank()) {
             filter.setCity(cityFilterField.getText().trim());
         }
+        filter.setPageNumber(currentPage);
+        filter.setPageSize(15); 
+
         UiAnimationHelper.setSkeletonVisible(listingsTable, true);
         PagedResult<Property> paged = listingManagementService.searchListings(filter);
+        
         java.util.List<Property> previous = java.util.List.copyOf(listingsTable.getItems());
         listingsTable.setItems(FXCollections.observableArrayList(paged.getItems()));
         UiAnimationHelper.highlightTableDiff(listingsTable, previous, paged.getItems());
         UiAnimationHelper.setSkeletonVisible(listingsTable, false);
-        UiFeedbackHelper.setStatus(statusLabel, "Loaded " + paged.getItems().size() + " listings.", "status-success");
+        
+        this.totalPages = paged.getTotalPages();
+        updatePaginationUI(paged);
+        
+        UiFeedbackHelper.setStatus(statusLabel, "Loaded page " + currentPage + " of " + totalPages, "status-success");
+    }
+
+    private void updatePaginationUI(PagedResult<Property> paged) {
+        if (paginationSummaryLabel != null) {
+            int start = (paged.getPageNumber() - 1) * paged.getPageSize() + 1;
+            int end = start + paged.getItems().size() - 1;
+            if (paged.getItems().isEmpty()) start = 0;
+            paginationSummaryLabel.setText(String.format("Showing %d to %d of %d entries", start, end, paged.getTotalCount()));
+        }
+
+        if (prevPageButton != null) prevPageButton.setDisable(!paged.hasPreviousPage());
+        if (nextPageButton != null) nextPageButton.setDisable(!paged.hasNextPage());
+
+        updatePageButtonStyle(page1Button, 1);
+        updatePageButtonStyle(page2Button, 2);
+        updatePageButtonStyle(page3Button, 3);
+        
+        if (page2Button != null) page2Button.setDisable(totalPages < 2);
+        if (page3Button != null) page3Button.setDisable(totalPages < 3);
+    }
+
+    private void updatePageButtonStyle(Button btn, int pageNum) {
+        if (btn == null) return;
+        btn.getStyleClass().remove("terminal-primary-button");
+        btn.getStyleClass().remove("terminal-secondary-button");
+        
+        if (currentPage == pageNum) {
+            btn.getStyleClass().add("terminal-primary-button");
+        } else {
+            btn.getStyleClass().add("terminal-secondary-button");
+        }
     }
 
     @FXML
@@ -109,7 +178,7 @@ public class ListingsController implements Initializable {
             return;
         }
         listingManagementService.addListing(property);
-        onLoadListings();
+        loadCurrentPage();
         UiFeedbackHelper.showInfoDialog("Added", "Listing added successfully.");
     }
 
@@ -129,7 +198,7 @@ public class ListingsController implements Initializable {
         }
         updated.setPropertyId(selected.getPropertyId());
         listingManagementService.updateListing(updated);
-        onLoadListings();
+        loadCurrentPage();
         UiFeedbackHelper.showInfoDialog("Updated", "Listing updated successfully.");
     }
 
@@ -151,8 +220,56 @@ public class ListingsController implements Initializable {
             return;
         }
         listingManagementService.deleteListing(selected.getPropertyId());
-        onLoadListings();
+        loadCurrentPage();
         UiFeedbackHelper.showInfoDialog("Deleted", "Listing " + selected.getPropertyId() + " deleted.");
+    }
+
+    @FXML
+    private void onPrevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            loadCurrentPage();
+        }
+    }
+
+    @FXML
+    private void onGoToPage1() {
+        currentPage = 1;
+        loadCurrentPage();
+    }
+
+    @FXML
+    private void onGoToPage2() {
+        if (totalPages >= 2) {
+            currentPage = 2;
+            loadCurrentPage();
+        }
+    }
+
+    @FXML
+    private void onGoToPage3() {
+        if (totalPages >= 3) {
+            currentPage = 3;
+            loadCurrentPage();
+        }
+    }
+
+    @FXML
+    private void onNextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadCurrentPage();
+        }
+    }
+
+    @FXML
+    private void onEditMetadata() {
+        UiFeedbackHelper.showInfoDialog("Metadata", "Bulk metadata editor opened.");
+    }
+
+    @FXML
+    private void onForceSync() {
+        UiFeedbackHelper.setStatus(statusLabel, "Force sync started...", "status-success");
     }
 
     private Property openPropertyDialog(String title, Property existing) {

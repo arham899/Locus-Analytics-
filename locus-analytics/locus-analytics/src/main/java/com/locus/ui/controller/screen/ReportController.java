@@ -313,6 +313,38 @@ public class ReportController implements Initializable {
         UiNavigationBridge.openScreen("FMV");
     }
 
+    @FXML
+    private void onFilterReports() {
+        UiFeedbackHelper.setStatus(statusLabel, "Report filter applied.", "status-success");
+    }
+
+    @FXML
+    private void onNewReport() {
+        if (propertyIdField != null) propertyIdField.clear();
+        latestGeneratedReport = null;
+        if (pdfPreviewImageView != null) pdfPreviewImageView.setImage(null);
+        UiFeedbackHelper.setStatus(statusLabel, "New report draft started.", "status-success");
+    }
+
+    @FXML
+    private void onShare() {
+        if (currentReport() == null) {
+            UiFeedbackHelper.showErrorDialog("No Report", "Generate a report before sharing.");
+            return;
+        }
+        UiFeedbackHelper.showInfoDialog("Share Report", "Report link copied to clipboard (Simulated).");
+    }
+
+    @FXML
+    private void onRegen() {
+        onGenerateReport();
+    }
+
+    @FXML
+    private void onFullPreview() {
+        onDownloadPdf();
+    }
+
     private List<String> selectedSections() {
         List<String> sections = new ArrayList<>();
         if (fmvCheckBox != null && fmvCheckBox.isSelected()) sections.add("fmv");

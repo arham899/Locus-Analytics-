@@ -69,7 +69,7 @@
 
         <HBox spacing="10.0">
             <Button text="Load Config" styleClass="terminal-outline-button" onAction="#onLoadConfig"/>
-            <Button text="Reset to Defaults" styleClass="terminal-secondary-button"/>
+            <Button text="Reset to Defaults" styleClass="terminal-secondary-button" onAction="#onResetToDefaults"/>
             <Button text="Save Configuration" styleClass="terminal-primary-button" onAction="#onSaveConfig"/>
             <Label fx:id="statusLabel" text="Configuration dashboard ready." styleClass="terminal-status-label" HBox.hgrow="ALWAYS"/>
         </HBox>
@@ -78,7 +78,7 @@
     <VBox spacing="8.0" prefWidth="280.0" styleClass="terminal-card">
         <HBox>
             <Label text="Audit Trail" styleClass="terminal-card-title" HBox.hgrow="ALWAYS"/>
-            <Button text="Filter" styleClass="terminal-link-button"/>
+            <Button text="Filter" styleClass="terminal-link-button" onAction="#onFilterAudit"/>
         </HBox>
         <Label text="Threshold Adjusted" styleClass="terminal-label"/>
         <Label fx:id="auditEntryOneLabel" text="admin_jdoe changed Confidence Cutoff from 0.80 to 0.85" wrapText="true" styleClass="terminal-muted-text"/>

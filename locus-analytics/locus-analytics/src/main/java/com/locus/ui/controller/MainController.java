@@ -4,7 +4,6 @@ import com.locus.model.User;
 import com.locus.ui.BrandAssets;
 import com.locus.ui.SceneManager;
 import com.locus.ui.ServiceRegistry;
-import com.locus.ui.controller.UiNavigationBridge;
 import com.locus.ui.controller.screen.UiAnimationHelper;
 import com.locus.ui.controller.screen.UiMotionProfile;
 import javafx.fxml.FXMLLoader;
@@ -21,36 +20,39 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 
-/**
- * Controller for MainView shell placeholder.
- */
 public class MainController implements Initializable {
 
-    @FXML
-    private Label userLabel;
+    @FXML private Label userLabel;
+    @FXML private Label roleLabel;
+    @FXML private Label statusLabel;
+    @FXML private VBox adminSection;
+    @FXML private VBox contentPane;
+    @FXML private ImageView topbarLogoView;
 
-    @FXML
-    private Label roleLabel;
-
-    @FXML
-    private Label statusLabel;
-
-    @FXML
-    private VBox adminSection;
-
-    @FXML
-    private VBox contentPane;
-
-    @FXML
-    private ImageView topbarLogoView;
+    // Nav buttons for active-state tracking
+    @FXML private Button navDashboard;
+    @FXML private Button navFmv;
+    @FXML private Button navSearch;
+    @FXML private Button navCompare;
+    @FXML private Button navRental;
+    @FXML private Button navRoi;
+    @FXML private Button navReport;
+    @FXML private Button navTrends;
+    @FXML private Button navHeatmap;
+    @FXML private Button navClusters;
+    @FXML private Button navEtl;
+    @FXML private Button navListings;
+    @FXML private Button navConfig;
 
     private SceneManager sceneManager;
     private ServiceRegistry serviceRegistry;
     private User currentUser;
-    private boolean navHoverWired;
+    private Button activeNavButton;
+    private List<Button> allNavButtons;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -65,7 +67,6 @@ public class MainController implements Initializable {
             topbarLogoView.setVisible(false);
             topbarLogoView.setManaged(false);
         }
-        wireHoverAnimations();
     }
 
     public void setSceneManager(SceneManager sceneManager) {
@@ -81,99 +82,62 @@ public class MainController implements Initializable {
     }
 
     public void initializeShell() {
-        if (currentUser == null) {
-            return;
-        }
-        userLabel.setText(currentUser.getName() + " (" + currentUser.getEmail() + ")");
-        roleLabel.setText("Role: " + currentUser.getRole());
+        if (currentUser == null) return;
+
+        String name = currentUser.getName() != null ? currentUser.getName() : currentUser.getEmail();
+        userLabel.setText(name);
+        roleLabel.setText(currentUser.getRole() != null ? currentUser.getRole().toUpperCase() : "");
+
         boolean isAdmin = "admin".equalsIgnoreCase(currentUser.getRole());
         adminSection.setManaged(isAdmin);
         adminSection.setVisible(isAdmin);
+
+        allNavButtons = new ArrayList<>(List.of(
+                navDashboard, navFmv, navSearch, navCompare,
+                navRental, navRoi, navReport,
+                navTrends, navHeatmap, navClusters
+        ));
+        if (isAdmin) {
+            allNavButtons.addAll(List.of(navEtl, navListings, navConfig));
+        }
+        allNavButtons.forEach(btn -> {
+            if (btn != null) {
+                UiAnimationHelper.attachHoverScale(btn);
+                UiAnimationHelper.attachSpringPress(btn);
+            }
+        });
+
         UiNavigationBridge.registerScreenOpener(this::openByKey);
-        loadContent("/fxml/screens/FMVEstimateView.fxml", "Estimate FMV");
+        loadContent("/fxml/screens/FMVEstimateView.fxml", "FMV ESTIMATE", navFmv);
     }
 
     private void openByKey(String key) {
-        if (key == null) {
-            return;
-        }
+        if (key == null) return;
         switch (key) {
-            case "REPORT" -> onOpenReport();
+            case "REPORT"  -> onOpenReport();
             case "COMPARE" -> onOpenCompare();
-            case "SEARCH" -> onOpenSearch();
-            case "FMV" -> onOpenFmv();
-            default -> {
-                // ignore unknown route keys
-            }
+            case "SEARCH"  -> onOpenSearch();
+            case "FMV"     -> onOpenFmv();
         }
     }
 
-    @FXML
-    private void onOpenDashboard() {
-        loadContent("/fxml/screens/FMVEstimateView.fxml", "Market Intelligence Dashboard");
-    }
+    @FXML private void onOpenDashboard()   { loadContent("/fxml/screens/FMVEstimateView.fxml",  "DASHBOARD",             navDashboard); }
+    @FXML private void onOpenFmv()         { loadContent("/fxml/screens/FMVEstimateView.fxml",  "FMV ESTIMATE",          navFmv); }
+    @FXML private void onOpenRentalYield() { loadContent("/fxml/screens/RentalYieldView.fxml",  "RENTAL YIELD",          navRental); }
+    @FXML private void onOpenRoi()         { loadContent("/fxml/screens/ROIView.fxml",           "ROI ANALYSIS",          navRoi); }
+    @FXML private void onOpenPriceTrends() { loadContent("/fxml/screens/PriceTrendView.fxml",   "PRICE TRENDS",          navTrends); }
+    @FXML private void onOpenClusters()    { loadContent("/fxml/screens/ClusterView.fxml",       "INVESTMENT CLUSTERS",   navClusters); }
+    @FXML private void onOpenSearch()      { loadContent("/fxml/screens/SearchView.fxml",        "SEARCH PROPERTIES",     navSearch); }
+    @FXML private void onOpenCompare()     { loadContent("/fxml/screens/CompareView.fxml",       "COMPARE PROPERTIES",    navCompare); }
+    @FXML private void onOpenHeatmap()     { loadContent("/fxml/screens/HeatmapView.fxml",       "HEATMAP",               navHeatmap); }
+    @FXML private void onOpenReport()      { loadContent("/fxml/screens/ReportView.fxml",        "REPORTING",             navReport); }
+    @FXML private void onOpenEtl()         { loadContent("/fxml/screens/ETLView.fxml",           "ETL PIPELINE",          navEtl); }
+    @FXML private void onOpenListings()    { loadContent("/fxml/screens/ListingsView.fxml",      "MANAGE LISTINGS",       navListings); }
+    @FXML private void onOpenConfig()      { loadContent("/fxml/screens/ConfigView.fxml",        "CONFIGURATION",         navConfig); }
 
-    @FXML
-    private void onOpenFmv() {
-        loadContent("/fxml/screens/FMVEstimateView.fxml", "Estimate FMV");
-    }
-
-    @FXML
-    private void onOpenRentalYield() {
-        loadContent("/fxml/screens/RentalYieldView.fxml", "Calculate Rental Yield");
-    }
-
-    @FXML
-    private void onOpenRoi() {
-        loadContent("/fxml/screens/ROIView.fxml", "Calculate ROI");
-    }
-
-    @FXML
-    private void onOpenPriceTrends() {
-        loadContent("/fxml/screens/PriceTrendView.fxml", "View Price Trends");
-    }
-
-    @FXML
-    private void onOpenClusters() {
-        loadContent("/fxml/screens/ClusterView.fxml", "Identify Investment Clusters");
-    }
-
-    @FXML
-    private void onOpenSearch() {
-        loadContent("/fxml/screens/SearchView.fxml", "Search Properties");
-    }
-
-    @FXML
-    private void onOpenCompare() {
-        loadContent("/fxml/screens/CompareView.fxml", "Compare Properties");
-    }
-
-    @FXML
-    private void onOpenHeatmap() {
-        loadContent("/fxml/screens/HeatmapView.fxml", "Property Heatmap");
-    }
-
-    @FXML
-    private void onOpenReport() {
-        loadContent("/fxml/screens/ReportView.fxml", "Generate Valuation Report");
-    }
-
-    @FXML
-    private void onOpenEtl() {
-        loadContent("/fxml/screens/ETLView.fxml", "Run ETL Pipeline");
-    }
-
-    @FXML
-    private void onOpenListings() {
-        loadContent("/fxml/screens/ListingsView.fxml", "Manage Listings");
-    }
-
-    @FXML
-    private void onOpenConfig() {
-        loadContent("/fxml/screens/ConfigView.fxml", "System Configuration");
-    }
-
-    private void loadContent(String fxmlPath, String screenTitle) {
+    private void loadContent(String fxmlPath, String screenTitle, Button sourceButton) {
+        setActiveNav(sourceButton);
+        statusLabel.setText("Loading " + screenTitle + "...");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node content = loader.load();
@@ -191,44 +155,51 @@ public class MainController implements Initializable {
             contentPane.getChildren().setAll(scrollWrapper);
             UiAnimationHelper.RouteIntent intent = resolveIntent(screenTitle);
             UiAnimationHelper.playPageEnter(scrollWrapper, intent);
-            java.util.List<Node> revealTargets = collectRevealTargets(content);
+            List<Node> revealTargets = collectRevealTargets(content);
             UiAnimationHelper.playStaggeredReveal(revealTargets);
             UiAnimationHelper.installScrollReveal(scrollWrapper, revealTargets);
-            if (intent == UiAnimationHelper.RouteIntent.ANALYSIS) {
-                // Keep scanline subtle and avoid full-page parallax jitter.
-                if (!revealTargets.isEmpty()) {
-                    UiAnimationHelper.playScanline(revealTargets.get(0));
-                }
+            if (intent == UiAnimationHelper.RouteIntent.ANALYSIS && !revealTargets.isEmpty()) {
+                UiAnimationHelper.playScanline(revealTargets.get(0));
             }
-            statusLabel.setText("Loaded: " + screenTitle);
-        } catch (IOException exception) {
-            exception.printStackTrace();
+            statusLabel.setText(screenTitle);
+        } catch (IOException ex) {
+            ex.printStackTrace();
             Label heading = new Label(screenTitle);
-            heading.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
-            String rootMessage = exception.getCause() == null ? exception.getMessage() : exception.getCause().getMessage();
-            Label details = new Label("Unable to load screen: " + fxmlPath
-                    + (rootMessage == null ? "" : "\n" + rootMessage));
-            details.setStyle("-fx-text-fill: #b00020;");
+            heading.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #f8fafc;");
+            String rootMsg = ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage();
+            Label details = new Label("Unable to load: " + fxmlPath
+                    + (rootMsg == null ? "" : "\n" + rootMsg));
+            details.setStyle("-fx-text-fill: #f87171;");
             details.setWrapText(true);
             contentPane.getChildren().setAll(heading, details);
-            statusLabel.setText("Failed to load: " + screenTitle);
+            statusLabel.setText("Error loading " + screenTitle);
+        }
+    }
+
+    private void setActiveNav(Button button) {
+        if (activeNavButton != null) {
+            activeNavButton.getStyleClass().remove("terminal-nav-button-active");
+        }
+        activeNavButton = button;
+        if (button != null && !button.getStyleClass().contains("terminal-nav-button-active")) {
+            button.getStyleClass().add("terminal-nav-button-active");
         }
     }
 
     private void injectServices(Object controller) {
-        if (controller == null) {
-            return;
-        }
-        if (controller instanceof ServiceAwareController serviceAwareController) {
-            serviceAwareController.setServiceRegistry(serviceRegistry);
+        if (controller == null) return;
+        if (controller instanceof ServiceAwareController sac) {
+            sac.setServiceRegistry(serviceRegistry);
             return;
         }
         try {
-            Method method = controller.getClass().getMethod("setServiceRegistry", com.locus.ui.ServiceRegistry.class);
-            method.invoke(controller, serviceRegistry);
-        } catch (Exception ignored) {
-            // Controller does not require service injection.
-        }
+            Method m = controller.getClass().getMethod("setServiceRegistry", ServiceRegistry.class);
+            m.invoke(controller, serviceRegistry);
+        } catch (Exception ignored) {}
+        try {
+            Method m = controller.getClass().getMethod("setCurrentUser", User.class);
+            m.invoke(controller, currentUser);
+        } catch (Exception ignored) {}
     }
 
     @FXML
@@ -237,60 +208,23 @@ public class MainController implements Initializable {
         sceneManager.showLogin();
     }
 
-    private java.util.List<Node> collectRevealTargets(Node content) {
-        if (content == null) {
-            return java.util.List.of();
-        }
-        if (!(content instanceof VBox)) {
-            return java.util.List.of(content);
-        }
-        VBox root = (VBox) content;
+    private List<Node> collectRevealTargets(Node content) {
+        if (content == null) return List.of();
+        if (!(content instanceof VBox root)) return List.of(content);
         return root.getChildren().stream()
-                .filter(node -> node != null && node.isManaged())
+                .filter(n -> n != null && n.isManaged())
                 .limit(6)
                 .toList();
     }
 
-    private void wireHoverAnimations() {
-        if (navHoverWired || contentPane == null) {
-            return;
-        }
-        if (contentPane.getScene() == null) {
-            contentPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
-                if (newScene != null && !navHoverWired) {
-                    wireHoverAnimations();
-                }
-            });
-            return;
-        }
-        Set<Node> navNodes = contentPane.getScene().getRoot().lookupAll(".terminal-nav-button");
-        navNodes.stream()
-                .filter(Button.class::isInstance)
-                .map(Button.class::cast)
-                .forEach(button -> {
-                    UiAnimationHelper.attachHoverScale(button);
-                    UiAnimationHelper.attachSpringPress(button);
-                });
-        navHoverWired = true;
-    }
-
-    private UiAnimationHelper.RouteIntent resolveIntent(String screenTitle) {
-        if (screenTitle == null) {
-            return UiAnimationHelper.RouteIntent.GENERAL;
-        }
-        String normalized = screenTitle.toLowerCase();
-        if (normalized.contains("report")) {
-            return UiAnimationHelper.RouteIntent.REPORT;
-        }
-        if (normalized.contains("config") || normalized.contains("listings") || normalized.contains("etl")) {
-            return UiAnimationHelper.RouteIntent.ADMIN;
-        }
-        if (normalized.contains("yield") || normalized.contains("roi")
-                || normalized.contains("trend") || normalized.contains("cluster")
-                || normalized.contains("heatmap") || normalized.contains("fmv")
-                || normalized.contains("search") || normalized.contains("compare")) {
-            return UiAnimationHelper.RouteIntent.ANALYSIS;
-        }
+    private UiAnimationHelper.RouteIntent resolveIntent(String title) {
+        if (title == null) return UiAnimationHelper.RouteIntent.GENERAL;
+        String t = title.toLowerCase();
+        if (t.contains("report"))                                   return UiAnimationHelper.RouteIntent.REPORT;
+        if (t.contains("config") || t.contains("listings") || t.contains("etl")) return UiAnimationHelper.RouteIntent.ADMIN;
+        if (t.contains("yield") || t.contains("roi") || t.contains("trend")
+                || t.contains("cluster") || t.contains("heatmap") || t.contains("fmv")
+                || t.contains("search") || t.contains("compare"))  return UiAnimationHelper.RouteIntent.ANALYSIS;
         return UiAnimationHelper.RouteIntent.GENERAL;
     }
 }

@@ -28,8 +28,8 @@
             <Label text="Investment Cluster Discovery &amp; Analysis" styleClass="terminal-muted-text"/>
         </VBox>
         <HBox spacing="8.0">
-            <Button text="Filters" styleClass="terminal-outline-button"/>
-            <Button text="Export Data" styleClass="terminal-outline-button"/>
+            <Button text="Filters" styleClass="terminal-outline-button" onAction="#onToggleFilters"/>
+            <Button text="Export Data" styleClass="terminal-outline-button" onAction="#onExportData"/>
         </HBox>
     </HBox>
 
@@ -50,7 +50,7 @@
         <VBox spacing="12.0" HBox.hgrow="ALWAYS">
             <VBox spacing="8.0" styleClass="terminal-card" VBox.vgrow="ALWAYS">
                 <Label text="Risk vs Return Profile" styleClass="terminal-card-title"/>
-                <ScatterChart minHeight="320.0" VBox.vgrow="ALWAYS">
+                <ScatterChart fx:id="riskReturnChart" minHeight="320.0" VBox.vgrow="ALWAYS">
                     <xAxis>
                         <NumberAxis label="Risk (Volatility Index)"/>
                     </xAxis>
@@ -63,22 +63,22 @@
             <HBox spacing="10.0">
                 <VBox spacing="4.0" styleClass="terminal-kpi-card" HBox.hgrow="ALWAYS">
                     <Label text="GROWTH" styleClass="terminal-kpi-label"/>
-                    <Label text="22.4% CAGR" styleClass="terminal-kpi-value"/>
+                    <Label fx:id="growthCagrLabel" text="--.-% CAGR" styleClass="terminal-kpi-value"/>
                     <Label text="Top Decile" styleClass="terminal-status-label"/>
                 </VBox>
                 <VBox spacing="4.0" styleClass="terminal-kpi-card" HBox.hgrow="ALWAYS">
                     <Label text="VALUE" styleClass="terminal-kpi-label"/>
-                    <Label text="12.1% CAGR" styleClass="terminal-kpi-value"/>
+                    <Label fx:id="valueCagrLabel" text="--.-% CAGR" styleClass="terminal-kpi-value"/>
                     <Label text="Stable Yield" styleClass="terminal-muted-text"/>
                 </VBox>
                 <VBox spacing="4.0" styleClass="terminal-kpi-card" HBox.hgrow="ALWAYS">
                     <Label text="PREMIUM" styleClass="terminal-kpi-label"/>
-                    <Label text="8.5% CAGR" styleClass="terminal-kpi-value"/>
+                    <Label fx:id="premiumCagrLabel" text="--.-% CAGR" styleClass="terminal-kpi-value"/>
                     <Label text="Low Volatility" styleClass="terminal-muted-text"/>
                 </VBox>
                 <VBox spacing="4.0" styleClass="terminal-kpi-card" HBox.hgrow="ALWAYS">
                     <Label text="EMERGING" styleClass="terminal-kpi-label"/>
-                    <Label text="34.2% CAGR" styleClass="terminal-kpi-value"/>
+                    <Label fx:id="emergingCagrLabel" text="--.-% CAGR" styleClass="terminal-kpi-value"/>
                     <Label text="High Risk" styleClass="terminal-chip-error"/>
                 </VBox>
             </HBox>

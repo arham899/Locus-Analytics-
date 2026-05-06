@@ -26,8 +26,8 @@
         <HBox>
             <Label text="Valuation Reports" styleClass="terminal-screen-title" HBox.hgrow="ALWAYS"/>
             <HBox spacing="8.0">
-                <Button text="Filter" styleClass="terminal-outline-button"/>
-                <Button text="New Report" styleClass="terminal-primary-button"/>
+                <Button text="Filter" styleClass="terminal-outline-button" onAction="#onFilterReports"/>
+                <Button text="New Report" styleClass="terminal-primary-button" onAction="#onNewReport"/>
             </HBox>
         </HBox>
         <TableView fx:id="reportsTable" VBox.vgrow="ALWAYS" minHeight="460.0">
@@ -77,12 +77,12 @@
         <Button fx:id="printPdfButton" text="Print PDF" styleClass="terminal-outline-button" onAction="#onPrintPdf"/>
         <ImageView fx:id="pdfPreviewImageView" fitWidth="280.0" fitHeight="180.0" preserveRatio="true"/>
         <HBox spacing="8.0">
-            <Button text="Share" styleClass="terminal-outline-button" HBox.hgrow="ALWAYS"/>
-            <Button text="Regen" styleClass="terminal-secondary-button" HBox.hgrow="ALWAYS"/>
+            <Button text="Share" styleClass="terminal-outline-button" HBox.hgrow="ALWAYS" onAction="#onShare"/>
+            <Button text="Regen" styleClass="terminal-secondary-button" HBox.hgrow="ALWAYS" onAction="#onRegen"/>
         </HBox>
         <Button fx:id="generateReportButton" text="Generate Report" styleClass="terminal-primary-button" onAction="#onGenerateReport"/>
         <ProgressIndicator fx:id="loadingIndicator" maxWidth="24.0" maxHeight="24.0" visible="false" managed="false" styleClass="form-loading-indicator"/>
         <Label fx:id="statusLabel" text="Report dashboard ready." styleClass="terminal-status-label"/>
-        <Button text="Full Preview" styleClass="terminal-link-button"/>
+        <Button text="Full Preview" styleClass="terminal-link-button" onAction="#onFullPreview"/>
     </VBox>
 </HBox>

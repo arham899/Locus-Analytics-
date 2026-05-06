@@ -151,6 +151,11 @@ public class HeatmapController implements Initializable {
         }
     }
 
+    @FXML
+    private void onViewReport() {
+        UiNavigationBridge.openScreen("REPORT");
+    }
+
     private void configureWebView() {
         WebEngine engine = heatmapWebView.getEngine();
         URL heatmapPage = getClass().getResource("/web/heatmap.html");

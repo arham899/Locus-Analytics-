@@ -3,6 +3,7 @@ package com.locus.ui.controller.screen;
 import com.locus.model.RentalAnalysis;
 import com.locus.service.RentalYieldService;
 import com.locus.ui.ServiceRegistry;
+import com.locus.ui.controller.UiNavigationBridge;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -140,9 +141,9 @@ public class RentalYieldController implements Initializable {
                 UiFeedbackHelper.setStatus(statusLabel, "Rental yield dashboard refreshed.", "status-success");
                 return;
             }
-            double propertyValue = Double.parseDouble(propertyValueField.getText().trim());
-            double monthlyRent = Double.parseDouble(monthlyRentField.getText().trim());
-            double annualExpenses = Double.parseDouble(annualExpensesField.getText().trim());
+            double propertyValue = Double.parseDouble(propertyValueField.getText().trim().replace(",", ""));
+            double monthlyRent = Double.parseDouble(monthlyRentField.getText().trim().replace(",", ""));
+            double annualExpenses = Double.parseDouble(annualExpensesField.getText().trim().replace(",", ""));
             String city = cityComboBox == null ? "Karachi" : cityComboBox.getValue();
             String locality = localityComboBox == null ? null : localityComboBox.getValue();
 
@@ -207,6 +208,7 @@ public class RentalYieldController implements Initializable {
         if (propertyValueField != null) propertyValueField.clear();
         if (monthlyRentField != null) monthlyRentField.clear();
         if (annualExpensesField != null) annualExpensesField.clear();
+        if (previousValuationComboBox != null) previousValuationComboBox.setValue("None");
         if (grossYieldLabel != null) grossYieldLabel.setText("-");
         if (netYieldLabel != null) netYieldLabel.setText("-");
         if (cityAverageLabel != null) cityAverageLabel.setText("-");
@@ -219,6 +221,11 @@ public class RentalYieldController implements Initializable {
         setLoadingState(false);
     }
 
+    @FXML
+    private void onViewReport() {
+        UiNavigationBridge.openScreen("REPORT");
+    }
+
     private void applyPreviousValuation(String option) {
         if (option == null || option.equals("None") || propertyValueField == null) {
             return;
@@ -226,7 +233,8 @@ public class RentalYieldController implements Initializable {
         int start = option.lastIndexOf('(');
         int end = option.lastIndexOf(')');
         if (start > -1 && end > start) {
-            String value = option.substring(start + 1, end).replace(",", "");
+            String raw = option.substring(start + 1, end);
+            String value = raw.replaceAll("[^0-9.]", "");
             propertyValueField.setText(value);
         }
     }

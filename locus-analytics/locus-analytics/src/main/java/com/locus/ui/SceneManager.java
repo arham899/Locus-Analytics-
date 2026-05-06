@@ -3,6 +3,7 @@ package com.locus.ui;
 import com.locus.model.User;
 import com.locus.ui.controller.LoginController;
 import com.locus.ui.controller.MainController;
+import com.locus.ui.controller.screen.IntroController;
 import com.locus.ui.controller.screen.UiAnimationHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,6 +23,28 @@ public class SceneManager {
     public SceneManager(Stage stage, ServiceRegistry serviceRegistry) {
         this.stage = stage;
         this.serviceRegistry = serviceRegistry;
+    }
+
+    public void showIntro() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/IntroView.fxml"));
+            Parent root = loader.load();
+
+            IntroController controller = loader.getController();
+            controller.setSceneManager(this);
+
+            stage.setTitle("LOCUS Analytics - Intro");
+            Scene scene = new Scene(root, 1180, 720);
+            scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
+            UiAnimationHelper.playSceneCrossfade(stage, scene);
+            
+            // Start playing the video after scene is set
+            controller.play();
+        } catch (IOException e) {
+            System.err.println("Unable to load IntroView.fxml. Skipping to Login.");
+            e.printStackTrace();
+            showLogin();
+        }
     }
 
     public void showLogin() {

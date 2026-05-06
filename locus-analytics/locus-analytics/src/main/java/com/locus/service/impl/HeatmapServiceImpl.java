@@ -13,9 +13,11 @@ import java.util.stream.Collectors;
 /**
  * Real implementation of {@link HeatmapService} (UC-7).
  *
- * <p>Fetches geocoded properties from the database, groups by locality,
+ * <p>
+ * Fetches geocoded properties from the database, groups by locality,
  * computes the requested metric per locality, normalizes weights to 0–1,
- * and returns data points for Google Maps heatmap rendering.</p>
+ * and returns data points for Google Maps heatmap rendering.
+ * </p>
  *
  * @author Arham Manzoor (24i-0640)
  */
@@ -71,7 +73,7 @@ public class HeatmapServiceImpl implements HeatmapService {
             // Average lat/lng for the locality
             double avgLat = localityProps.stream().mapToDouble(Property::getLatitude).average().orElse(0);
             double avgLng = localityProps.stream().mapToDouble(Property::getLongitude).average().orElse(0);
-            localityCoords.put(locality, new double[]{avgLat, avgLng});
+            localityCoords.put(locality, new double[] { avgLat, avgLng });
         }
 
         // ── Normalize to 0–1 ────────────────────────
@@ -110,7 +112,8 @@ public class HeatmapServiceImpl implements HeatmapService {
             case "listing_density" -> (double) properties.size();
 
             case "rental_demand" ->
-                // Real data: Use the average yield of the locality as a proxy for demand/potential
+                // Real data: Use the average yield of the locality as a proxy for
+                // demand/potential
                 rentalAnalysisDAO.getLocalityAverageYield(city, locality);
 
             default -> (double) properties.size();

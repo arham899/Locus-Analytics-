@@ -68,9 +68,11 @@ public class ListingManagementServiceImpl implements ListingManagementService {
     public PagedResult<Property> searchListings(SearchFilter filter) {
         // Reuse search logic from PropertyDAO
         java.util.List<Property> results = propertyDAO.search(filter);
+        int totalCount = propertyDAO.countByFilter(filter);
+        
         return new PagedResult<>(
                 results,
-                results.size(),
+                totalCount,
                 filter.getPageNumber(),
                 filter.getPageSize()
         );

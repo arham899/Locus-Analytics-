@@ -94,7 +94,7 @@
                     <TableColumn text="Trend"/>
                 </columns>
             </TableView>
-            <Button text="View Full Report" styleClass="terminal-outline-button"/>
+            <Button text="View Full Report" styleClass="terminal-outline-button" onAction="#onViewReport"/>
         </VBox>
     </HBox>
 

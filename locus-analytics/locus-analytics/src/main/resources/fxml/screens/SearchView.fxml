@@ -30,8 +30,8 @@
                    styleClass="terminal-muted-text" wrapText="true"/>
         </VBox>
         <Pane HBox.hgrow="ALWAYS"/>
-        <Button text="Export CSV" styleClass="terminal-outline-button"/>
-        <Button text="Save Search" styleClass="terminal-primary-button"/>
+        <Button text="Export CSV" styleClass="terminal-outline-button" onAction="#onExportCsv"/>
+        <Button text="Save Search" styleClass="terminal-primary-button" onAction="#onSaveSearch"/>
     </HBox>
 
     <VBox spacing="12.0" styleClass="terminal-card">

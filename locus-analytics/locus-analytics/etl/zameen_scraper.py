@@ -343,41 +343,38 @@ def parse_detail_page(
     actual_city = city
     actual_locality = city
 
-    # Priority 1: Specific Location Header (via data-testid or specific classes)
-    loc_header = (
-        soup.find(attrs={"data-testid": re.compile(r"location", re.I)})
-        or soup.find("div", {"class": re.compile(r"location|_1OVlo|_83c3c76d", re.I)})
-        or soup.find("h2", {"class": re.compile(r"location", re.I)})
-    )
-    
-    if loc_header:
-        actual_locality = loc_header.get_text(strip=True)
+    # Priority 1: Use Breadcrumb for accurate Locality
+    if breadcrumb_list and len(breadcrumb_list) >= 2:
+        # Last item is usually the most specific locality
+        actual_locality = breadcrumb_list[-1]
     else:
-        # Priority 2: Look for secondary headings that look like locations
-        for h in soup.find_all(["h1", "h2"]):
-            text = h.get_text(strip=True)
-            if "," in text and actual_city.lower() in text.lower():
-                actual_locality = text.split(",")[0].strip()
-                break
+        loc_header = (
+            soup.find(attrs={"data-testid": re.compile(r"location", re.I)})
+            or soup.find("div", {"class": re.compile(r"location|_1OVlo|_83c3c76d", re.I)})
+            or soup.find("h2", {"class": re.compile(r"location", re.I)})
+        )
+        if loc_header:
+            actual_locality = loc_header.get_text(strip=True)
+        else:
+            for h in soup.find_all(["h1", "h2"]):
+                text = h.get_text(strip=True)
+                if "," in text and actual_city.lower() in text.lower():
+                    actual_locality = text.split(",")[0].strip()
+                    break
 
     # Clean up actual_city/locality
     def _clean(t):
-        # Remove "for sale", "for rent", etc but KEEP "Block A", "Phase 7"
         t = re.sub(r"\s*(for\s+sale|for\s+rent|houses?|apartments?|plots?)$", "", t, flags=re.I).strip()
         t = re.sub(r"^Zameen\s*", "", t, flags=re.I).strip()
-        # Remove trailing city name if it's already in the locality (e.g. "Top City 1, Islamabad" -> "Top City 1")
         t = re.sub(r",\s*" + re.escape(actual_city) + r"$", "", t, flags=re.I).strip()
         return t
 
     city = _clean(actual_city)
     locality = _clean(actual_locality)
 
-    # Prevent doubled names (e.g., "Bahria Town Bahria Town")
     if locality.lower().startswith(city.lower()) and len(locality) > len(city):
         locality = locality[len(city):].strip()
     
-    # Final check: if locality contains the same word/phrase twice
-    # Fixes "Falcon Complex New Malir Falcon Complex New Malir"
     def _dedupe_phrase(s):
         parts = s.split()
         if len(parts) >= 2:
@@ -387,13 +384,11 @@ def parse_detail_page(
         return s
     
     locality = _dedupe_phrase(locality)
-    # Run once more in case of triple repeats
     locality = _dedupe_phrase(locality)
 
     # ── Price ────────────────────────────────────────────────────────
     price = None
 
-    # Try JSON-LD first (most reliable)
     for script in soup.find_all("script", type="application/ld+json"):
         try:
             data = json.loads(script.string or "")
@@ -432,6 +427,11 @@ def parse_detail_page(
     if not price or price <= 0:
         return None
 
+    # Fix: if price is stored as Lakhs (e.g. 27.0), convert to PKR
+    if price < 10000:
+        price = price * 100000
+
+
     # ── Area ─────────────────────────────────────────────────────────
     area = None
 
@@ -465,6 +465,10 @@ def parse_detail_page(
     if not area or area <= 0:
         return None
 
+    # Fix: if area is stored as Marlas (e.g. 10.0), convert to sq.ft.
+    if area < 100:
+        area = area * 225.0
+
     # ── Final City/Locality ──────────────────────────────────────────
     # If the page actually belongs to another city (e.g. DHA Lahore shown in Karachi search),
     # we use the actual city to avoid bad data.
@@ -473,17 +477,28 @@ def parse_detail_page(
 
     # ── Bedrooms / Bathrooms ──────────────────────────────────────────
     def _count(pattern):
+        # Find elements matching "3 Beds" or "4 Baths"
         el = soup.find(
             lambda t: t.name in ("span", "li", "div")
-            and re.search(pattern, t.get_text(), re.I)
+            and re.search(r"\b\d+\s*" + pattern, t.get_text(), re.I)
         )
         if el:
-            m = re.search(r"\d+", el.get_text())
-            return int(m.group()) if m else 0
+            # Extract only the number that comes right before the pattern
+            m = re.search(r"\b(\d+)\s*" + pattern, el.get_text(), re.I)
+            if m:
+                val = int(m.group(1))
+                # Sanity check: Zameen houses rarely have > 15 beds. Prevents grabbing IDs.
+                if val <= 20:
+                    return val
         return 0
 
     bedrooms  = _count(r"bed")
     bathrooms = _count(r"bath")
+
+    # Final Area Sanity Check
+    if area > 100000:
+        return None  # Reject listing if area is impossibly large
+
 
     # ── Listing date ──────────────────────────────────────────────────
     date_el = soup.find("time")

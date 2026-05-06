@@ -25,7 +25,7 @@ public final class BrandAssets {
             }
         }
         try {
-            var resource = BrandAssets.class.getResource("/images/locus-logo.png");
+            var resource = BrandAssets.class.getResource("/images/logo.png");
             if (resource != null) {
                 return new Image(resource.toExternalForm(), true);
             }

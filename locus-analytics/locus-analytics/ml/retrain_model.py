@@ -212,24 +212,24 @@ def print_comparison(prev, new):
     print("\n" + "=" * 55)
     print("  MODEL COMPARISON")
     print("=" * 55)
-    print(f"  {'Metric':<20} {'Previous':>12} {'New':>12}  {'Δ':>8}")
+    print(f"  {'Metric':<20} {'Previous':>12} {'New':>12}  {'Diff':>8}")
     print("  " + "-" * 53)
     for key in ("test_r2", "mae", "rmse"):
         p_val = prev.get(key, "N/A")
         n_val = new.get(key, "N/A")
         if isinstance(p_val, float) and isinstance(n_val, float):
             delta = n_val - p_val
-            arrow = "↑" if (key == "test_r2" and delta > 0) or (key != "test_r2" and delta < 0) else "↓"
+            arrow = "+" if (key == "test_r2" and delta > 0) or (key != "test_r2" and delta < 0) else "-"
             print(f"  {key:<20} {p_val:>12.4f} {n_val:>12.4f}  {arrow}{abs(delta):>7.4f}")
         else:
             print(f"  {key:<20} {'N/A':>12} {n_val:>12.4f}")
     print("=" * 55)
 
-    print("\n  Per-city R² breakdown:")
+    print("\n  Per-city R2 breakdown:")
     for city, cm in new.get("city_metrics", {}).items():
         prev_r2 = prev.get("city_metrics", {}).get(city, {}).get("r2", None)
         tag = f"(prev {prev_r2:.4f})" if prev_r2 is not None else "(new city)"
-        print(f"    {city:<20} R²={cm['r2']:.4f}  {tag}")
+        print(f"    {city:<20} R2={cm['r2']:.4f}  {tag}")
     print()
 
 

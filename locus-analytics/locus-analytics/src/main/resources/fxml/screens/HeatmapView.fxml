@@ -50,7 +50,7 @@
         <VBox spacing="12.0" prefWidth="320.0" styleClass="terminal-card">
             <Label text="Spatial Insights" styleClass="terminal-card-title"/>
             <Label text="Islington Cluster  |  Liquidity 84.2" styleClass="terminal-status-label"/>
-            <Button text="View Full Report" styleClass="terminal-outline-button"/>
+            <Button text="View Full Report" styleClass="terminal-outline-button" onAction="#onViewReport"/>
             <Label text="Top Hotspots" styleClass="terminal-label"/>
             <TableView fx:id="heatmapTable" VBox.vgrow="ALWAYS" minHeight="260.0">
                 <columns>

@@ -40,18 +40,7 @@ public class SearchServiceImpl implements SearchService {
 
         // ── Execute search via DAO ──────────────────
         List<Property> results = propertyDAO.search(filter);
-
-        // ── Build PagedResult ───────────────────────
-        // The DAO's search() returns paginated results already limited by pageSize
-        // Total count needs a separate call — we approximate from results
-        // For full accuracy, PropertyDAO would need a countByFilter() method
-        long totalCount = results.size();
-
-        // If we got a full page, there are likely more results
-        if (results.size() == filter.getPageSize()) {
-            // Estimate higher — in production, use a COUNT(*) query
-            totalCount = (long) filter.getPageNumber() * filter.getPageSize() + filter.getPageSize();
-        }
+        int totalCount = propertyDAO.countByFilter(filter);
 
         return new PagedResult<>(
                 results,

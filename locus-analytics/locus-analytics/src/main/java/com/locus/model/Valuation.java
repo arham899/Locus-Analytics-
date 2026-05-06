@@ -33,6 +33,8 @@ public class Valuation {
         this.valuationId = UUID.randomUUID().toString();
         this.keyFactors = new ArrayList<>();
         this.calculationDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /** Full constructor for database retrieval. */

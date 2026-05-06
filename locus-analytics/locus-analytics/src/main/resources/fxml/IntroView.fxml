@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.control.Button?>
+
+<StackPane style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.locus.ui.controller.screen.IntroController">
+    <MediaView fx:id="mediaView"/>
+    <Button text="Skip Intro" onAction="#onSkip" StackPane.alignment="BOTTOM_RIGHT" style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.5); -fx-font-size: 14px; -fx-padding: 20px; -fx-cursor: hand;"/>
+</StackPane>

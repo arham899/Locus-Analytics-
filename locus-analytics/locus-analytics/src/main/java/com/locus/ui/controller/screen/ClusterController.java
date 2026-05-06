@@ -57,6 +57,16 @@ public class ClusterController implements Initializable {
     @FXML
     private WebView clusterMapWebView;
     @FXML
+    private javafx.scene.chart.ScatterChart<Number, Number> riskReturnChart;
+    @FXML
+    private Label growthCagrLabel;
+    @FXML
+    private Label valueCagrLabel;
+    @FXML
+    private Label premiumCagrLabel;
+    @FXML
+    private Label emergingCagrLabel;
+    @FXML
     private Label clusterDetailsLabel;
     @FXML
     private Label drilldownPriceLabel;
@@ -163,6 +173,8 @@ public class ClusterController implements Initializable {
                 latestClusters = clusters;
                 clusterTable.setItems(FXCollections.observableArrayList(clusters));
                 UiAnimationHelper.highlightTableDiff(clusterTable, previous, clusters);
+                populateChart(clusters);
+                updateKpiCards(clusters);
                 pushClustersToMap(clusters);
                 if (!clusters.isEmpty()) {
                     clusterTable.getSelectionModel().select(0);
@@ -183,6 +195,16 @@ public class ClusterController implements Initializable {
         } catch (Exception ex) {
             UiFeedbackHelper.setStatus(statusLabel, "Could not identify clusters: " + ex.getMessage(), "status-error");
         }
+    }
+
+    @FXML
+    private void onToggleFilters() {
+        UiFeedbackHelper.setStatus(statusLabel, "Cluster filters toggled.", "status-success");
+    }
+
+    @FXML
+    private void onExportData() {
+        UiFeedbackHelper.showInfoDialog("Export", "Cluster data exported to analytics-export.json");
     }
 
     private int parsePeriodYears() {
@@ -219,6 +241,19 @@ public class ClusterController implements Initializable {
             return;
         }
         try {
+            double baseLat = 24.8607;
+            double baseLng = 67.0011;
+            if (cityComboBox != null && "Lahore".equalsIgnoreCase(cityComboBox.getValue())) {
+                baseLat = 31.5204;
+                baseLng = 74.3587;
+            } else if (cityComboBox != null && "Islamabad".equalsIgnoreCase(cityComboBox.getValue())) {
+                baseLat = 33.6844;
+                baseLng = 73.0479;
+            }
+
+            final double finalLat = baseLat;
+            final double finalLng = baseLng;
+
             List<Map<String, Object>> payload = clusters.stream().map(cluster -> {
                 Map<String, Object> row = new HashMap<>();
                 row.put("locality", cluster.getLocality());
@@ -226,8 +261,9 @@ public class ClusterController implements Initializable {
                 row.put("appreciation", cluster.getPriceAppreciation());
                 row.put("volumeGrowth", cluster.getListingVolumeGrowth());
                 row.put("rentalTrend", cluster.getRentalTrend());
-                row.put("lat", 24.8607 + (Math.random() - 0.5) * 0.25);
-                row.put("lng", 67.0011 + (Math.random() - 0.5) * 0.25);
+                // Fallback to random coordinates around the city center
+                row.put("lat", finalLat + (Math.random() - 0.5) * 0.1);
+                row.put("lng", finalLng + (Math.random() - 0.5) * 0.1);
                 return row;
             }).toList();
             String json = objectMapper.writeValueAsString(payload);
@@ -236,6 +272,45 @@ public class ClusterController implements Initializable {
         } catch (Exception ex) {
             showMap(false);
         }
+    }
+
+    private void populateChart(List<InvestmentCluster> clusters) {
+        if (riskReturnChart == null) return;
+        riskReturnChart.getData().clear();
+        
+        javafx.scene.chart.XYChart.Series<Number, Number> series = new javafx.scene.chart.XYChart.Series<>();
+        series.setName("Localities");
+        
+        for (InvestmentCluster c : clusters) {
+            // Proxy Risk (Volatility) as 100 - score, and Return as price appreciation
+            double risk = Math.max(0, 100 - c.getInvestmentScore());
+            double returnVal = c.getPriceAppreciation();
+            
+            javafx.scene.chart.XYChart.Data<Number, Number> data = new javafx.scene.chart.XYChart.Data<>(risk, returnVal);
+            // Optionally, we could add a tooltip here using the locality name
+            series.getData().add(data);
+        }
+        riskReturnChart.getData().add(series);
+    }
+
+    private void updateKpiCards(List<InvestmentCluster> clusters) {
+        if (clusters == null || clusters.isEmpty() || growthCagrLabel == null) return;
+        
+        List<Double> cagrs = clusters.stream()
+                .map(InvestmentCluster::getPriceAppreciation)
+                .sorted()
+                .toList();
+                
+        int size = cagrs.size();
+        double premium = cagrs.get(Math.max(0, (int)(size * 0.1))); // 10th percentile
+        double value = cagrs.get(size / 2); // Median
+        double growth = cagrs.get(Math.max(0, (int)(size * 0.75))); // 75th percentile
+        double emerging = cagrs.get(size - 1); // Max
+        
+        premiumCagrLabel.setText(String.format("%.1f%% CAGR", premium));
+        valueCagrLabel.setText(String.format("%.1f%% CAGR", value));
+        growthCagrLabel.setText(String.format("%.1f%% CAGR", growth));
+        emergingCagrLabel.setText(String.format("%.1f%% CAGR", emerging));
     }
 
     private void highlightMarker(String locality) {

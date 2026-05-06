@@ -27,9 +27,11 @@ public class InvestmentClusterDAOImpl implements InvestmentClusterDAO {
                 investment_score,
                 price_appreciation,
                 listing_volume_growth,
-                rental_trend
+                rental_trend,
+                created_at,
+                updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
         try (Connection conn = dataSource.getConnection();
@@ -42,6 +44,10 @@ public class InvestmentClusterDAOImpl implements InvestmentClusterDAO {
             stmt.setDouble(5, c.getPriceAppreciation());
             stmt.setDouble(6, c.getListingVolumeGrowth());
             stmt.setDouble(7, c.getRentalTrend());
+
+            java.time.LocalDateTime now = java.time.LocalDateTime.now();
+            stmt.setTimestamp(8, Timestamp.valueOf(c.getCreatedAt() != null ? c.getCreatedAt() : now));
+            stmt.setTimestamp(9, Timestamp.valueOf(c.getUpdatedAt() != null ? c.getUpdatedAt() : now));
 
             return stmt.executeUpdate() > 0;
 

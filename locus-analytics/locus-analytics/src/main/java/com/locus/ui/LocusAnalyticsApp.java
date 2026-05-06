@@ -12,7 +12,7 @@ public class LocusAnalyticsApp extends Application {
     public void start(Stage primaryStage) {
         ServiceRegistry serviceRegistry = new ServiceRegistry();
         SceneManager sceneManager = new SceneManager(primaryStage, serviceRegistry);
-        sceneManager.showLogin();
+        sceneManager.showIntro();
     }
 
     public static void main(String[] args) {

@@ -454,10 +454,18 @@
     -fx-text-fill: #052e16;
     -fx-font-weight: 700;
     -fx-padding: 8 14;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.20), 8, 0.2, 0, 1);
 }
 
 .terminal-primary-button:hover {
     -fx-background-color: #34d399;
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.35), 10, 0.25, 0, 2);
+}
+
+.terminal-primary-button:pressed {
+    -fx-background-color: #059669;
 }
 
 .terminal-outline-button {
@@ -586,10 +594,9 @@
 }
 
 .stitch-login-mini-brand {
-    -fx-font-size: 28px;
+    -fx-font-size: 18px;
     -fx-font-weight: 800;
-    -fx-text-fill: #0f172a;
-    -fx-opacity: 0.35;
+    -fx-text-fill: #64748b;
 }
 
 .stitch-login-heading {
@@ -683,6 +690,27 @@
     -fx-font-weight: 700;
 }
 
+.stitch-demo-hint-card {
+    -fx-background-color: rgba(16, 185, 129, 0.06);
+    -fx-border-color: rgba(16, 185, 129, 0.2);
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 10 12;
+    -fx-max-width: 440;
+}
+
+.stitch-demo-hint-title {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 9px;
+    -fx-font-weight: 800;
+}
+
+.stitch-demo-hint-row {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+}
+
 .field-invalid {
     -fx-border-color: #ef4444;
     -fx-border-width: 1.4;
@@ -760,10 +788,6 @@
 
 .form-loading-indicator {
     -fx-progress-color: #10b981;
-}
-
-.terminal-primary-button {
-    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.15), 8, 0.2, 0, 1);
 }
 
 .stitch-login-right-pane {
@@ -858,4 +882,221 @@
     -fx-text-fill: #fde68a;
     -fx-padding: 6 10;
     -fx-background-radius: 8;
+}
+
+/* ── Nav section labels ─────────────────────── */
+.terminal-nav-section-label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 9px;
+    -fx-font-weight: 800;
+    -fx-padding: 4 4 0 4;
+}
+
+/* ── Active nav button ──────────────────────── */
+.terminal-nav-button-active {
+    -fx-background-color: rgba(16, 185, 129, 0.12);
+    -fx-text-fill: #10b981;
+    -fx-border-color: rgba(16, 185, 129, 0.4);
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+/* ── Topbar user / role chips ───────────────── */
+.terminal-topbar-user {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.terminal-topbar-role {
+    -fx-background-color: rgba(16, 185, 129, 0.15);
+    -fx-text-fill: #10b981;
+    -fx-font-size: 10px;
+    -fx-font-weight: 800;
+    -fx-padding: 3 7;
+    -fx-background-radius: 999;
+}
+
+/* ── Sidebar separator ──────────────────────── */
+.terminal-sidebar-separator {
+    -fx-background-color: #1f2937;
+    -fx-border-color: transparent;
+    -fx-pref-height: 1;
+    -fx-opacity: 0.6;
+}
+
+/* ── Content area (no padding — each screen owns its own) ── */
+.terminal-content-area {
+    -fx-background-color: #031427;
+}
+
+/* ── Sidebar CTA border radius ──────────────── */
+.terminal-cta-button {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-cursor: hand;
+}
+
+.terminal-cta-button:hover {
+    -fx-background-color: #059669;
+}
+
+/* ── Nav button border radius ───────────────── */
+.terminal-nav-button {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-cursor: hand;
+}
+
+/* ── Secondary button tweaks ────────────────── */
+.terminal-secondary-button {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+}
+
+/* ── Outline button radius ──────────────────── */
+.terminal-outline-button {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-cursor: hand;
+}
+
+/* ── Stitch login submit hover pressed ─────── */
+.stitch-login-submit:pressed {
+    -fx-background-color: #047857;
+}
+
+/* ── Input focus ring (terminal main) ──────── */
+.terminal-main-root .text-field:focused,
+.terminal-main-root .password-field:focused,
+.terminal-main-root .combo-box:focused,
+.terminal-main-root .text-area:focused {
+    -fx-border-color: #10b981;
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.12), 6, 0.2, 0, 0);
+}
+
+/* ── Table row alternating tint ─────────────── */
+.terminal-main-root .table-row-cell:even {
+    -fx-background-color: #020617;
+}
+
+.terminal-main-root .table-row-cell:odd {
+    -fx-background-color: #030e1e;
+}
+
+.terminal-main-root .table-row-cell:filled:hover {
+    -fx-background-color: #0b1c30;
+}
+
+.terminal-main-root .table-row-cell:filled:selected {
+    -fx-background-color: rgba(16, 185, 129, 0.12);
+    -fx-text-fill: #e2e8f0;
+}
+
+/* ── Chart dark theme ───────────────────────── */
+.terminal-main-root .chart {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.terminal-main-root .chart-plot-background {
+    -fx-background-color: #020617;
+}
+
+.terminal-main-root .chart-horizontal-grid-lines,
+.terminal-main-root .chart-vertical-grid-lines {
+    -fx-stroke: #1f2937;
+    -fx-stroke-dash-array: 4 4;
+}
+
+.terminal-main-root .axis-label,
+.terminal-main-root .axis {
+    -fx-tick-label-fill: #64748b;
+    -fx-text-fill: #64748b;
+}
+
+.terminal-main-root .chart-series-line {
+    -fx-stroke: #10b981;
+    -fx-stroke-width: 2.5px;
+}
+
+.terminal-main-root .default-color0.chart-series-line { -fx-stroke: #10b981; }
+.terminal-main-root .default-color1.chart-series-line { -fx-stroke: #38bdf8; }
+.terminal-main-root .default-color2.chart-series-line { -fx-stroke: #f59e0b; }
+.terminal-main-root .default-color3.chart-series-line { -fx-stroke: #ef4444; }
+
+.terminal-main-root .default-color0.chart-bar        { -fx-bar-fill: #10b981; }
+.terminal-main-root .default-color1.chart-bar        { -fx-bar-fill: #38bdf8; }
+.terminal-main-root .default-color2.chart-bar        { -fx-bar-fill: #f59e0b; }
+.terminal-main-root .default-color3.chart-bar        { -fx-bar-fill: #ef4444; }
+
+.terminal-main-root .default-color0.chart-pie        { -fx-pie-color: #10b981; }
+.terminal-main-root .default-color1.chart-pie        { -fx-pie-color: #38bdf8; }
+.terminal-main-root .default-color2.chart-pie        { -fx-pie-color: #f59e0b; }
+.terminal-main-root .default-color3.chart-pie        { -fx-pie-color: #ef4444; }
+
+/* ── ScrollBar dark theme ───────────────────── */
+.terminal-main-root .scroll-bar:vertical .track,
+.terminal-main-root .scroll-bar:horizontal .track {
+    -fx-background-color: #0b1c30;
+}
+
+.terminal-main-root .scroll-bar:vertical .thumb,
+.terminal-main-root .scroll-bar:horizontal .thumb {
+    -fx-background-color: #334155;
+    -fx-background-radius: 999;
+}
+
+.terminal-main-root .scroll-bar:vertical .thumb:hover,
+.terminal-main-root .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #475569;
+}
+
+.terminal-main-root .scroll-bar .increment-button,
+.terminal-main-root .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+}
+
+/* ── ComboBox / ChoiceBox dark theme ─────────── */
+.terminal-main-root .combo-box .list-cell,
+.terminal-main-root .combo-box-popup .list-cell {
+    -fx-background-color: #0b1c30;
+    -fx-text-fill: #e2e8f0;
+}
+
+.terminal-main-root .combo-box-popup .list-view {
+    -fx-background-color: #0b1c30;
+    -fx-border-color: #334155;
+}
+
+.terminal-main-root .combo-box-popup .list-cell:hover {
+    -fx-background-color: #1e293b;
+}
+
+.terminal-main-root .combo-box > .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.terminal-main-root .combo-box > .arrow-button > .arrow {
+    -fx-background-color: #64748b;
+}
+
+/* ── DatePicker dark theme ──────────────────── */
+.terminal-main-root .date-picker .arrow-button {
+    -fx-background-color: transparent;
+}
+
+/* ── ProgressBar green ──────────────────────── */
+.terminal-main-root .progress-bar > .bar {
+    -fx-background-color: #10b981;
+    -fx-background-radius: 999;
+}
+
+.terminal-main-root .progress-bar > .track {
+    -fx-background-color: #1f2937;
+    -fx-background-radius: 999;
 }

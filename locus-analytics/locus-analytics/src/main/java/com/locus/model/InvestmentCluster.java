@@ -28,6 +28,8 @@ public class InvestmentCluster {
     /** Default no-arg constructor. Generates a random UUID for clusterId. */
     public InvestmentCluster() {
         this.clusterId = UUID.randomUUID().toString();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /** Full constructor for database retrieval. */

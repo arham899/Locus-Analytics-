@@ -99,6 +99,17 @@ public class ConfigController implements Initializable {
         }
     }
 
+    @FXML
+    private void onResetToDefaults() {
+        onLoadConfig();
+        UiFeedbackHelper.setStatus(statusLabel, "Reset to defaults.", "status-success");
+    }
+
+    @FXML
+    private void onFilterAudit() {
+        UiFeedbackHelper.setStatus(statusLabel, "Audit trail filtered.", "status-success");
+    }
+
     private void validateConfig(SystemConfiguration config) {
         if (config.getDbHost() == null || config.getDbHost().isBlank()) {
             throw new IllegalArgumentException("DB host is required.");

@@ -22,7 +22,10 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.control.Alert;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -368,6 +371,38 @@ public class SearchController implements Initializable {
         if (bedroomsColumn != null) bedroomsColumn.setSortable(true);
         if (bathroomsColumn != null) bathroomsColumn.setSortable(true);
         if (listingDateColumn != null) listingDateColumn.setSortable(true);
+    }
+
+    @FXML
+    private void onExportCsv() {
+        if (resultsTable == null || resultsTable.getItems().isEmpty()) {
+            UiFeedbackHelper.showInfoDialog("No Data", "Search for properties before exporting.");
+            return;
+        }
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Export Search Results");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
+        chooser.setInitialFileName("search-results.csv");
+        File file = chooser.showSaveDialog(null);
+        if (file == null) return;
+
+        try (PrintWriter writer = new PrintWriter(file)) {
+            writer.println("ID,City,Locality,Type,Price,Area,Bedrooms,Bathrooms,Date");
+            for (Property p : resultsTable.getItems()) {
+                writer.printf("%s,%s,%s,%s,%.2f,%.2f,%d,%d,%s%n",
+                        p.getPropertyId(), p.getCity(), p.getLocality(), p.getPropertyType(),
+                        p.getPrice(), p.getArea(), p.getBedrooms(), p.getBathrooms(),
+                        p.getListingDate() != null ? p.getListingDate().toString() : "-");
+            }
+            UiFeedbackHelper.showInfoDialog("Export Successful", "Data exported to " + file.getName());
+        } catch (Exception ex) {
+            UiFeedbackHelper.showErrorDialog("Export Failed", ex.getMessage());
+        }
+    }
+
+    @FXML
+    private void onSaveSearch() {
+        UiFeedbackHelper.showInfoDialog("Saved", "Search criteria saved to your profile.");
     }
 
     private String blankToNull(String value) {

@@ -32,6 +32,8 @@ public class ETLController implements Initializable {
     @FXML
     private Label failedCountLabel;
     @FXML
+    private Label failedSubLabel;
+    @FXML
     private Label healthLabel;
     @FXML
     private ProgressBar progressBar;
@@ -69,8 +71,13 @@ public class ETLController implements Initializable {
         healthLabel.setText("98.5%");
         successAnimated.addListener((obs, oldValue, newValue) ->
                 successCountLabel.setText(String.valueOf(newValue.intValue())));
-        failedAnimated.addListener((obs, oldValue, newValue) ->
-                failedCountLabel.setText(String.valueOf(newValue.intValue())));
+        failedAnimated.addListener((obs, oldValue, newValue) -> {
+            int count = newValue.intValue();
+            failedCountLabel.setText(String.valueOf(count));
+            if (failedSubLabel != null) {
+                failedSubLabel.setText(count > 0 ? "Needs operator attention" : "All tasks completed");
+            }
+        });
         progressAnimated.addListener((obs, oldValue, newValue) ->
                 progressBar.setProgress(Math.max(0, Math.min(1, newValue.doubleValue()))));
         UiAnimationHelper.playStaggeredReveal(List.of(
@@ -191,6 +198,25 @@ public class ETLController implements Initializable {
         thread.start();
     }
 
+    @FXML
+    private void onSearchPipelines() {
+        UiFeedbackHelper.showInfoDialog("Search", "Pipeline search dialog opened.");
+    }
+
+    @FXML
+    private void onPausePipeline() {
+        if (pipelineRunning) {
+            pipelineRunning = false;
+            stopPolling();
+            UiFeedbackHelper.setStatus(statusLabel, "Pipeline paused.", "status-warning");
+        }
+    }
+
+    @FXML
+    private void onViewLogs() {
+        UiFeedbackHelper.showInfoDialog("Logs", "Fetching latest execution logs...");
+    }
+
     private void setLoadingState(boolean loading) {
         boolean disableActions = loading || pipelineRunning;
         if (loadingIndicator != null) {
@@ -206,7 +232,7 @@ public class ETLController implements Initializable {
         }
         if (startPipelineButton != null) {
             startPipelineButton.setDisable(disableActions);
-            startPipelineButton.setText(disableActions ? "Running..." : "Rerun Failed");
+            startPipelineButton.setText(disableActions ? "Running..." : "Start Pipeline");
         }
     }
 

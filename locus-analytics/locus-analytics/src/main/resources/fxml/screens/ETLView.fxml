@@ -26,7 +26,7 @@
         <VBox HBox.hgrow="ALWAYS"/>
         <Button fx:id="loadLastRunButton" text="Load Last Run" onAction="#onLoadLastRun" styleClass="terminal-outline-button"/>
         <Button fx:id="refreshStatusButton" text="Refresh Status" onAction="#onRefreshStatus" styleClass="terminal-outline-button"/>
-        <Button fx:id="startPipelineButton" text="Rerun Failed" onAction="#onStartPipeline" styleClass="terminal-primary-button"/>
+        <Button fx:id="startPipelineButton" text="Start Pipeline" onAction="#onStartPipeline" styleClass="terminal-primary-button"/>
         <ProgressIndicator fx:id="loadingIndicator" maxWidth="22.0" maxHeight="22.0" visible="false" managed="false" styleClass="form-loading-indicator"/>
     </HBox>
 
@@ -44,7 +44,7 @@
         <VBox spacing="4.0" styleClass="terminal-kpi-card" GridPane.rowIndex="0" GridPane.columnIndex="2">
             <Label text="Failed Tasks" styleClass="terminal-kpi-label"/>
             <Label fx:id="failedCountLabel" text="0" styleClass="terminal-kpi-value terminal-error"/>
-            <Label text="Needs operator attention" styleClass="terminal-muted-text"/>
+            <Label fx:id="failedSubLabel" text="All tasks completed" styleClass="terminal-muted-text"/>
         </VBox>
         <VBox spacing="4.0" styleClass="terminal-kpi-card" GridPane.rowIndex="0" GridPane.columnIndex="3">
             <Label text="Data Health" styleClass="terminal-kpi-label"/>
@@ -57,8 +57,8 @@
         <HBox alignment="CENTER_LEFT">
             <Label text="Active Pipelines" styleClass="terminal-card-title"/>
             <Pane HBox.hgrow="ALWAYS"/>
-            <Button text="Search pipelines..." styleClass="terminal-outline-button"/>
-            <Button text="Run Failed" onAction="#onStartPipeline" styleClass="terminal-primary-button"/>
+            <Button text="Search pipelines..." styleClass="terminal-outline-button" onAction="#onSearchPipelines"/>
+            <Button text="Start Pipeline" onAction="#onStartPipeline" styleClass="terminal-primary-button"/>
         </HBox>
 
         <GridPane hgap="10.0" vgap="10.0">
@@ -72,7 +72,7 @@
             <Label text="Internal_DB_v2" styleClass="terminal-muted-text" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
             <Label fx:id="stageLabel" text="PROCESSING" styleClass="terminal-chip-success" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
             <ProgressBar fx:id="progressBar" prefWidth="180.0" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
-            <Button text="Pause" styleClass="terminal-link-button" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
+            <Button text="Pause" styleClass="terminal-link-button" onAction="#onPausePipeline" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
 
             <Label text="Historical Sales Dump" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
             <Label text="External_API_1" styleClass="terminal-muted-text" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
@@ -82,9 +82,9 @@
 
             <Label text="Property Listings Sync" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
             <Label text="Zameen_Scraper" styleClass="terminal-muted-text" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-            <Label text="SUCCESS" styleClass="terminal-chip-warning" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+            <Label text="SUCCESS" styleClass="terminal-chip-success" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
             <Label text="100% - Duration: 12m 4s" styleClass="terminal-muted-text" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
-            <Button text="Logs" styleClass="terminal-link-button" GridPane.rowIndex="3" GridPane.columnIndex="4"/>
+            <Button text="Logs" styleClass="terminal-link-button" onAction="#onViewLogs" GridPane.rowIndex="3" GridPane.columnIndex="4"/>
         </GridPane>
 
         <BorderPane>

@@ -41,17 +41,17 @@
                     <TableColumn fx:id="idColumn" text="ID" prefWidth="130.0"/>
                     <TableColumn fx:id="cityColumn" text="City" prefWidth="120.0"/>
                     <TableColumn fx:id="localityColumn" text="Locality" prefWidth="220.0"/>
-                    <TableColumn fx:id="priceColumn" text="Price (USD)" prefWidth="160.0"/>
+                    <TableColumn fx:id="priceColumn" text="Price (Rs)" prefWidth="160.0"/>
                 </columns>
             </TableView>
             <HBox>
-                <Label text="Showing 1 to 5 of 12,402 entries" styleClass="terminal-muted-text" HBox.hgrow="ALWAYS"/>
+                <Label fx:id="paginationSummaryLabel" text="Showing 1 to 5 of 12,402 entries" styleClass="terminal-muted-text" HBox.hgrow="ALWAYS"/>
                 <HBox spacing="6.0">
-                    <Button text="Prev" styleClass="terminal-secondary-button"/>
-                    <Button text="1" styleClass="terminal-primary-button"/>
-                    <Button text="2" styleClass="terminal-secondary-button"/>
-                    <Button text="3" styleClass="terminal-secondary-button"/>
-                    <Button text="Next" styleClass="terminal-secondary-button"/>
+                    <Button fx:id="prevPageButton" text="Prev" styleClass="terminal-secondary-button" onAction="#onPrevPage"/>
+                    <Button fx:id="page1Button" text="1" styleClass="terminal-primary-button" onAction="#onGoToPage1"/>
+                    <Button fx:id="page2Button" text="2" styleClass="terminal-secondary-button" onAction="#onGoToPage2"/>
+                    <Button fx:id="page3Button" text="3" styleClass="terminal-secondary-button" onAction="#onGoToPage3"/>
+                    <Button fx:id="nextPageButton" text="Next" styleClass="terminal-secondary-button" onAction="#onNextPage"/>
                 </HBox>
             </HBox>
         </VBox>
@@ -63,12 +63,12 @@
         <Label text="LST-9945" styleClass="terminal-chip-success"/>
         <Label text="Detail View" styleClass="terminal-card-title"/>
         <HBox spacing="8.0">
-            <Button text="Edit Metadata" styleClass="terminal-outline-button" HBox.hgrow="ALWAYS"/>
-            <Button text="Force Sync" styleClass="terminal-primary-button" HBox.hgrow="ALWAYS"/>
+            <Button text="Edit Metadata" styleClass="terminal-outline-button" HBox.hgrow="ALWAYS" onAction="#onEditMetadata"/>
+            <Button text="Force Sync" styleClass="terminal-primary-button" HBox.hgrow="ALWAYS" onAction="#onForceSync"/>
         </HBox>
         <VBox spacing="4.0">
             <Label text="Asset Class: Commercial / Office" styleClass="terminal-muted-text"/>
-            <Label text="Valuation: $12,400,000" styleClass="terminal-kpi-value"/>
+            <Label text="Valuation: Rs 124,000,000" styleClass="terminal-kpi-value"/>
             <Label text="Cap Rate: 5.2% | Occupancy: 88%" styleClass="terminal-muted-text"/>
         </VBox>
         <VBox spacing="6.0">

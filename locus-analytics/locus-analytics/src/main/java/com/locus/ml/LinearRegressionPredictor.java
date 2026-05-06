@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Java-side ML predictor that loads a trained Ridge regression model from JSON
@@ -22,6 +23,20 @@ import java.util.stream.Collectors;
  * @author Arham Manzoor (24i-0640)
  */
 public class LinearRegressionPredictor {
+
+    // ── Area-adjustment constants ─────────────────────────────────────
+    /** Baseline area (sq.ft.) used as the reference point for scaling. */
+    private static final double BASELINE_AREA_SQFT = 2250.0;
+    /** Elasticity exponent — a value of 0.55 means a doubling of area ≈ +46% in price. */
+    private static final double AREA_ELASTICITY = 0.55;
+
+    // ── Amenity premium multipliers ───────────────────────────────────
+    private static final Map<String, Double> AMENITY_PREMIUMS = Map.of(
+            "parking",   0.04,   // +4%
+            "furnished", 0.05,   // +5%
+            "security",  0.03,   // +3%
+            "lift",      0.035   // +3.5%
+    );
 
     private volatile double intercept;
     private volatile Map<String, Double> coefficients;
@@ -133,6 +148,29 @@ public class LinearRegressionPredictor {
             prediction = Math.exp(prediction);
         }
 
+        // ── Area-based adjustment ────────────────────────────────────
+        // The trained model's area coefficient is near-zero because the
+        // locality target-encoding already absorbs average area-price
+        // relationships. We apply a power-law scaling so that properties
+        // larger/smaller than the baseline see proportional price changes.
+        double area = property.getArea();
+        if (area > 0 && area != BASELINE_AREA_SQFT) {
+            double areaMultiplier = Math.pow(area / BASELINE_AREA_SQFT, AREA_ELASTICITY);
+            prediction *= areaMultiplier;
+        }
+
+        // ── Amenity premium adjustment ───────────────────────────────
+        // Each amenity adds a percentage premium on top of the base price.
+        List<String> amenities = property.getAmenities();
+        if (amenities != null && !amenities.isEmpty()) {
+            double amenityMultiplier = 1.0;
+            for (String amenity : amenities) {
+                amenityMultiplier += AMENITY_PREMIUMS.getOrDefault(
+                        amenity.toLowerCase().trim(), 0.0);
+            }
+            prediction *= amenityMultiplier;
+        }
+
         return prediction;
     }
 
@@ -163,13 +201,31 @@ public class LinearRegressionPredictor {
     public List<String> getKeyFactors(Property property) {
         double[] features = encodeFeatures(property);
 
-        // Compute |coefficient × feature value| for each feature
+        // Compute |coefficient × feature value| for each model feature
         Map<String, Double> impact = new LinkedHashMap<>();
         for (int i = 0; i < featureOrder.size(); i++) {
             String name = featureOrder.get(i);
             double coeff = coefficients.getOrDefault(name, 0.0);
             double value = features[i];
             impact.put(name, Math.abs(coeff * value));
+        }
+
+        // Add area adjustment impact
+        double area = property.getArea();
+        if (area > 0 && area != BASELINE_AREA_SQFT) {
+            double areaImpact = Math.abs(Math.log(area / BASELINE_AREA_SQFT) * AREA_ELASTICITY);
+            impact.put("area", areaImpact);
+        }
+
+        // Add amenity impact
+        List<String> amenities = property.getAmenities();
+        if (amenities != null && !amenities.isEmpty()) {
+            double amenityImpact = amenities.stream()
+                    .mapToDouble(a -> AMENITY_PREMIUMS.getOrDefault(a.toLowerCase().trim(), 0.0))
+                    .sum();
+            if (amenityImpact > 0) {
+                impact.put("amenities", amenityImpact);
+            }
         }
 
         // Sort by impact descending, take top 3
@@ -234,6 +290,7 @@ public class LinearRegressionPredictor {
             case "type_commercial" -> "Commercial Type";
             case "type_house" -> "House Type";
             case "type_plot" -> "Plot Type";
+            case "amenities" -> "Amenity Premium";
             default -> featureName;
         };
         return String.format("%s (impact: %.2f)", readable, impact);
