@@ -1,0 +1,36 @@
+# Java Build Output
+**/target/
+**/build/
+
+# Maven wrapper
+!.mvn/wrapper/maven-wrapper.jar
+
+# Python virtual environment & cache
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# IDE Settings
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# App Generated Data & Reports
+**/locus-analytics/generated-reports/*.pdf
+**/backups/
+**/ml/model.json
+**/config.properties.bak
