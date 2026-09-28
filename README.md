@@ -1,5 +1,33 @@
-# LOCUS Analytics - Real Estate Analytics Platform
+<div align="center">
 
+# 🏙️ LOCUS Analytics
+
+**Fair-value estimates and investment analytics for Pakistan's property market.**
+
+A JavaFX desktop platform backed by PostgreSQL, a Python scraping/ETL pipeline and a Ridge-regression valuation model — covering Karachi, Lahore and Islamabad.
+
+![Java 17](https://img.shields.io/badge/Java%2017-ED8B00?style=flat-square&logo=openjdk&logoColor=white) ![JavaFX](https://img.shields.io/badge/JavaFX-007396?style=flat-square&logo=java&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikitlearn&logoColor=white) ![Maven](https://img.shields.io/badge/Maven-C71A36?style=flat-square&logo=apachemaven&logoColor=white) ![JUnit 5](https://img.shields.io/badge/JUnit%205-25A162?style=flat-square&logo=junit5&logoColor=white)
+
+</div>
+
+## ✨ Highlights
+
+- **ML valuation engine** — Ridge regression trained in Python on scraped listings, exported to JSON and executed natively in Java (no Python runtime needed at inference)
+- **End-to-end data pipeline** — scraper → cleaner → loader with URL-hash deduplication and live progress tracking in the admin UI
+- **Investment analytics** — fair-market-value estimator, rental-yield and ROI calculators, price trends and ROI/yield clustering by neighbourhood
+- **Layered architecture** — UI → service → DAO → HikariCP connection pool, 14 JavaFX screens, JUnit 5 service tests
+- **Operational tooling** — trigger-based audit logs, scripted rolling DB backups, PDF valuation reports
+
+> **My role:** Lead Data Scientist — domain model, service layer and the ML valuation model.
+
+<details>
+<summary><b>Domain model</b></summary>
+
+![Domain model](domain_model.png)
+
+</details>
+
+---
 LOCUS Analytics is a comprehensive data analytics and valuation desktop application tailored for the real estate markets of Pakistan (specifically targeting Karachi, Lahore, and Islamabad). Built as a JavaFX application with a PostgreSQL database, an integrated Python ETL scraping pipeline, and Ridge Regression machine learning models, LOCUS provides actionable investment insights, heatmaps, and fair market value estimates.
 
 ---
